@@ -37,7 +37,7 @@ function errHandler(res, reason, message, code) {
 app.post('/usage', function(req, res) {
 	res.status(200).json({
 	    "response_type": "in_channel",
-	    "text": "It's 80 degrees right now.",
+	    "text": "It's 80 degrees right now." + req.body,
 	    "attachments": [
 	        {
 	            "text":"Partly cloudy today and tomorrow"
