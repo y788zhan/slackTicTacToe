@@ -12,6 +12,7 @@ app.set('view engine', 'ejs');
 
 // postgres connection
 pg.defaults.ssl = true;
+console.log(process.env.DATABSE_URL);
 pg.connect(process.env.DATABASE_URL, function(err, client) {
   if (err) throw err;
   console.log('Connected to postgres! Getting schemas...');
