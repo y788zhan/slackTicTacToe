@@ -53,7 +53,7 @@ app.post('/usage', function(req, res) {
 
 app.post('/start', function(req, res) {
 	res.status(200).json({
-	    "response_type": "in_channel",
+	    /*"response_type": "in_channel",
 	    "text": "+-----------+\n" +
 	    		"| O | X | X |\n" +
  				"+---+---+---+\n" +
@@ -61,6 +61,46 @@ app.post('/start', function(req, res) {
 				"+---+---+---+\n" +
 				"|   |   |   |\n" +
 				"+-----------+"
+		*/
+
+	    "text": "Would you like to play a game?",
+	    "attachments": [
+	        {
+	            "text": "Choose a game to play",
+	            "fallback": "You are unable to choose a game",
+	            "callback_id": "wopr_game",
+	            "color": "#3AA3E3",
+	            "attachment_type": "default",
+	            "actions": [
+	                {
+	                    "name": "chess",
+	                    "text": "Chess",
+	                    "type": "button",
+	                    "value": "chess"
+	                },
+	                {
+	                    "name": "maze",
+	                    "text": "Falken's Maze",
+	                    "type": "button",
+	                    "value": "maze"
+	                },
+	                {
+	                    "name": "war",
+	                    "text": "Thermonuclear War",
+	                    "style": "danger",
+	                    "type": "button",
+	                    "value": "war",
+	                    "confirm": {
+	                        "title": "Are you sure?",
+	                        "text": "Wouldn't you prefer a good game of chess?",
+	                        "ok_text": "Yes",
+	                        "dismiss_text": "No"
+	                    }
+	                }
+	            ]
+	        }
+	    ]
+
 	});
 	console.log(req.body.response_url);
 	request({
@@ -85,7 +125,7 @@ app.post('/restart', function(req, res) {
 })
 
 app.post('/move', function(req, res) {
-	res.status(200).json({"message": "TODO player move"});
+	res.status(200).json({"text": "HI" + req.body.text});
 })
 
 app.get('/gamestate', function(req, res) {
