@@ -52,9 +52,9 @@ app.post('/usage', function(req, res) {
 app.post('/start', function(req, res) {
 	res.status(200).json({
 	    "response_type": "in_channel",
-	    "text": "It's 80 degrees right now. BODY: " + "\n" +
-	    req.body.token + "\n" + req.body.team_id + "\n" req.body.channel_id + 
-	    "\n" + req.body.user_id + "\n" + req.body.user_name + "\n" + req.body.text,
+	    "text": "It's 80 degrees right now. BODY: " +
+	    req.body.token + " " + req.body.team_id + " " req.body.channel_id + 
+	    " " + req.body.user_id + " " + req.body.user_name + " " + req.body.text
 	});
 });
 
