@@ -51,11 +51,11 @@ app.post('/start', function(req, res) {
 	try {
 		reqstr = JSON.stringify(req);
 	} catch (error) {
-
+		reqstr = error.message || error;
 	}
 	res.status(200).json({
 	    "response_type": "in_channel",
-	    "text": "It's 80 degrees right now. BODY: " + (typeof req),
+	    "text": "It's 80 degrees right now. BODY: " + reqstr,
 	    "attachments": [
 	        {
 	            "text":"Partly cloudy today and tomorrow"
