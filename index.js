@@ -48,6 +48,7 @@ app.post('/usage', function(req, res) {
 	        }
 	    ]
 	});
+	console.log(req.body.response_url);
 	request({
 	    url: req.body.response_url,
 	    method: "POST",
