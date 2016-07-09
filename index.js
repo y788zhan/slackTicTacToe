@@ -1,4 +1,5 @@
 var express = require('express');
+var pg = require('pg');
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
@@ -9,9 +10,27 @@ app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
+// postgres connection
+pg.defaults.ssl = true;
+pg.connect(process.env.DATABASE_URL, function(err, client) {
+  if (err) throw err;
+  console.log('Connected to postgres! Getting schemas...');
+
+  client
+    .query('SELECT table_schema,table_name FROM information_schema.tables;')
+    .on('row', function(row) {
+      console.log(JSON.stringify(row));
+    });
+});
+
 app.get('/', function(request, response) {
   response.render('pages/index');
 });
+
+function errHandler(res, reason, message, code) {
+	console.log("ERROR: " + reason);
+	res.status(code || 500).json({"error": message});
+}
 
 
 // TIC TAC TOE API ENDPOINTS
