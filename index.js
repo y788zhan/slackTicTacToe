@@ -49,21 +49,15 @@ app.post('/usage', function(req, res) {
 	});
 });
 
-  1   2   3
-1 o | x | x
- ---+---+---
-2 o | x | x
- ---+---+---
-3   |   |
 
 app.post('/start', function(req, res) {
 	res.status(200).json({
 	    "response_type": "in_channel",
-	    "text": "  1   2   3" + 
-				"1 o | x | x" +
- 				" ---+---+---" +
-				"2 o | x | x" +
-				" ---+---+---" +
+	    "text": "  1   2   3\n" + 
+				"1 o | x | x\n" +
+ 				" ---+---+---\n" +
+				"2 o | x | x\n" +
+				" ---+---+---\n" +
 				"3   |   |   "
 	});
 });
