@@ -23,7 +23,7 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
   client
     .query('SELECT table_schema,table_name FROM information_schema.tables;')
     .on('row', function(row) {
-      console.log(JSON.stringify(row));
+      //console.log(JSON.stringify(row));
     });
 });
 
@@ -49,12 +49,12 @@ app.post('/usage', function(req, res) {
 	    ]
 	});
 	request({
-		url: req.body.response_url,
-		method: "POST",
-		body: {
-			text: "delayed"
-		},
-		json: true
+	    url: req.body.response_url,
+	    method: "POST",
+	    json: true,   // <--Very important!!!
+	    body: {text: "hi"}
+	}, function (error, response, body){
+	    console.log(response);
 	});
 });
 
