@@ -34,7 +34,7 @@ function errHandler(res, reason, message, code) {
 
 
 // TIC TAC TOE API ENDPOINTS
-app.get('/usage', function(req, res) {
+app.post('/usage', function(req, res) {
 	res.status(200).json({
 	    "response_type": "in_channel",
 	    "text": "It's 80 degrees right now.",
@@ -47,7 +47,15 @@ app.get('/usage', function(req, res) {
 });
 
 app.post('/start', function(req, res) {
-	res.status(200).json({"message": "TODO start game"});
+	res.status(200).json({
+	    "response_type": "in_channel",
+	    "text": "It's 80 degrees right now.",
+	    "attachments": [
+	        {
+	            "text":"Partly cloudy today and tomorrow"
+	        }
+	    ]
+	});
 });
 
 app.post('/quit', function(req, res) {
