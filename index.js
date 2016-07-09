@@ -1,6 +1,7 @@
 var express = require('express');
 var pg = require('pg');
 var bodyParser = require('body-parser');
+var request = require('request');
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
@@ -46,6 +47,14 @@ app.post('/usage', function(req, res) {
 	            "text":"Partly cloudy today and tomorrow"
 	        }
 	    ]
+	});
+	request({
+		url: req.body.response_url,
+		method: "POST",
+		body: {
+			text: "delayed"
+		},
+		json: true
 	});
 });
 
