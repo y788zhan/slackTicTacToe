@@ -53,7 +53,7 @@ app.post('/usage', function(req, res) {
 app.post('/start', function(req, res) {
 	res.status(200).json({
 	    "response_type": "in_channel",
-	    "text": "+-----------+\n"
+	    "text": "+-----------+\n" +
 	    		"| O | X | X |\n" +
  				"+---+---+---+\n" +
 				"| O | X | X |\n" +
