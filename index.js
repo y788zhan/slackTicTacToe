@@ -49,10 +49,7 @@ app.post('/usage', function(req, res) {
 app.post('/start', function(req, res) {
 	var reqstr = "";
 	try {
-		for (var key in req) {
-			if (!req.hasOwnProperty(key)) continue;
-			reqstr = reqstr + key + " ";
-		}
+		reqstr = req.body.token;
 	} catch (error) {
 		reqstr = error.message || error;
 	}
