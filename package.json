@@ -1,0 +1,14 @@
+{
+  "name": "slackheroku-ttt",
+  "version": "1.0.0",
+  "description": "a REST API for a tic tac toe app within slack",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "express": "^4.13.3"
+  }
+}
