@@ -69,7 +69,7 @@ app.post('/start', function(req, res) {
 	    headers: {
 	    	"content-type": "application/json"
 	    },
-	    body: {text: "hi"}
+	    body: JSON.stringify({text: "hi"})
 	}, function (error, response, body){
 	    console.log(response);
 	});
