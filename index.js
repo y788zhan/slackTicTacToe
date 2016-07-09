@@ -50,20 +50,11 @@ app.post('/usage', function(req, res) {
 });
 
 app.post('/start', function(req, res) {
-	var reqstr = "";
-	try {
-		reqstr = req.body.token;
-	} catch (error) {
-		reqstr = error.message || error;
-	}
 	res.status(200).json({
 	    "response_type": "in_channel",
-	    "text": "It's 80 degrees right now. BODY: " + reqstr,
-	    "attachments": [
-	        {
-	            "text":"Partly cloudy today and tomorrow"
-	        }
-	    ]
+	    "text": "It's 80 degrees right now. BODY: " + "\n" +
+	    req.body.token + "\n" + req.body.team_id + "\n" req.body.channel_id + 
+	    "\n" + req.body.user_id + "\n" + req.body.user_name + "\n" + req.body.text,
 	});
 });
 
