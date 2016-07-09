@@ -12,7 +12,6 @@ app.set('view engine', 'ejs');
 
 // postgres connection
 pg.defaults.ssl = true;
-console.log(process.env.DATABSE_URL);
 pg.connect(process.env.DATABASE_URL, function(err, client) {
   if (err) throw err;
   console.log('Connected to postgres! Getting schemas...');
@@ -36,7 +35,15 @@ function errHandler(res, reason, message, code) {
 
 // TIC TAC TOE API ENDPOINTS
 app.get('/usage', function(req, res) {
-	res.status(200).json({"message": "TODO usage details"});
+	res.status(200).json({
+	    "response_type": "in_channel",
+	    "text": "It's 80 degrees right now.",
+	    "attachments": [
+	        {
+	            "text":"Partly cloudy today and tomorrow"
+	        }
+	    ]
+	});
 });
 
 app.post('/start', function(req, res) {
