@@ -49,7 +49,7 @@ app.post('/usage', function(req, res) {
 app.post('/start', function(req, res) {
 	var reqstr = "";
 	try {
-		reqstr = JSON.stringify(req);
+		reqstr = util.inspect(req);
 	} catch (error) {
 		reqstr = error.message || error;
 	}
