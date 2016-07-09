@@ -63,7 +63,16 @@ app.post('/start', function(req, res) {
 				"+-----------+"
 	});
 	console.log(req.body.response_url);
-	
+	request({
+	    url: req.body.response_url,
+	    method: "POST",
+	    headers: {
+	    	"content-type": "application/json"
+	    },
+	    body: {text: "hi"}
+	}, function (error, response, body){
+	    console.log(response);
+	});
 });
 
 
