@@ -53,8 +53,8 @@ app.post('/start', function(req, res) {
 	res.status(200).json({
 	    "response_type": "in_channel",
 	    "text": "It's 80 degrees right now. BODY: " +
-	    req.body.token + " " + req.body.team_id + " " req.body.channel_id + 
-	    " " + req.body.user_id + " " + req.body.user_name + " " + req.body.text
+	    req.body.token //+ " " + req.body.team_id + " " req.body.channel_id + 
+	    //" " + req.body.user_id + " " + req.body.user_name + " " + req.body.text
 	});
 });
 
