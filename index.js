@@ -74,7 +74,7 @@ app.post('/usage', function(req, res) {
 app.post('/start', function(req, res) {
 	var reqstr = "";
 	try {
-		reqstr = stringify(req, null, 2);
+		//reqstr = stringify(req, null, 2);
 	} catch (error) {
 		reqstr = error.message || error;
 	}
