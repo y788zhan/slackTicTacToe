@@ -49,7 +49,7 @@ app.post('/usage', function(req, res) {
 app.post('/start', function(req, res) {
 	res.status(200).json({
 	    "response_type": "in_channel",
-	    "text": "It's 80 degrees right now.",
+	    "text": "It's 80 degrees right now. BODY: " + req.body,
 	    "attachments": [
 	        {
 	            "text":"Partly cloudy today and tomorrow"
