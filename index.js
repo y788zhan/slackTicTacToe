@@ -59,6 +59,8 @@ app.post('/start', function(req, res) {
 	var po = TTTGame.getPlayersObj(req);
 	var delayedRes = {};
 
+	console.log(po);
+
 	TTTGame.createNewGame(db, po, function(result) {
 		console.log(result.message);
 
