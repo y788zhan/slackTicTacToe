@@ -31,6 +31,9 @@ playersObj schema:
 	player1   : string,
 	player2   : string
 */
+
+TTTGame.no_op = function() {}
+
 TTTGame.getPlayersObj = function(req) {
 	var body = req.body;
 	return {
@@ -128,40 +131,42 @@ TTTGame.matchPlayers = function(db, playersObj) {
 // callbacks have a result parameter
 TTTGame.createNewGame = function(db, playersObj, callback) {
 	var self = this;
-	var result = {message: "success"};
-
-	console.log(db);
+	var qresult = {message: "success"};
+	callback = callback || self.no_op;
 
 	try {
-		console.log(self.makeChannelQuery(playersObj));
 		var query = db.query(self.makeChannelQuery(playersObj));
+		
 		query.on('row', function(row) {
-			console.log(row);
 			if (row) {
 				// this channel has previously played a game
 				console.log(row);
 				if (row.gamerunning === "YES") {
 					throw GAMEISRUNNING;
 				} else {
-					db.query(self.makeUpdateQuery(0, "", "YES", playersObj));
+					db.query(self.makeUpdateQuery(0, "", "YES", playersObj))
+						.on('end', function(result) {
+							callback(qresult);
+						});
 				}
-			} else {
-				// this channel has never played a game
-				console.log(self.makeInsertQuery(playersObj));
-				db.query(self.makeInsertQuery(playersObj));
 			}
 		});
-		query.on('error' ,function() {
-			console.log("ERROR");
-		})
+		
 		query.on('end', function(result) {
-			console.log("ROWCOUNT: " + result.rowCount);
+			if (result.rowCount == 0) {
+				// this channel has never played a game
+				console.log(self.makeInsertQuery(playersObj));
+				db.query(self.makeInsertQuery(playersObj))
+					.on('end', function(result) {
+						callback(qresult);
+					});
+			}
 		});
-	} catch (errmsg) {
-		result.message = errmsg;
-	}
 
-	if (typeof callback === "function") callback(result);
+	} catch (errmsg) {
+		qresult.message = errmsg;
+		callback(qresult);
+	}
 }
 
 TTTGame.restartGame = function(db, playersObj, callback) {
