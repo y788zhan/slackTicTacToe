@@ -135,12 +135,6 @@ TTTBoard.makeBoard = function(gameState) {
 
 }
 
-TTTBoard.printBoard = function(gameState) {
-    if (gameState != undefined) this.makeBoard(gameState);
-    
-    return JSON.stringify(this.board);
-}
-
 
 module.exports = TTTBoard;
 
