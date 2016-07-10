@@ -35,6 +35,7 @@ playersObj schema:
 
 
 String.prototype.replaceAt=function(index, character) {
+	console.log(this, this.length);
 	console.log(this.substr(0, index), character, this.substr(index + 1, this.length));
     return this.substr(0, index) + character + this.substr(index + 1, this.length);
 }
