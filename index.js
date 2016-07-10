@@ -1,8 +1,9 @@
-var express = require('express');
-var pg = require('pg');
+var express    = require('express');
+var pg         = require('pg');
 var bodyParser = require('body-parser');
-var request = require('request');
-var app = express();
+var request    = require('request');
+var TTT        = require('./javascript/ttt');
+var app        = express();
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -29,16 +30,11 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
       //console.log(JSON.stringify(row));
     });
 });
-
+/*
 app.get('/', function(request, response) {
   response.render('pages/index');
 });
-
-function errHandler(res, reason, message, code) {
-	console.log("ERROR: " + reason);
-	res.status(code || 500).json({"error": message});
-}
-
+*/
 
 // TIC TAC TOE API ENDPOINTS
 app.post('/usage', function(req, res) {
