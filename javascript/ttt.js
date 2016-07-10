@@ -67,7 +67,7 @@ TTTController.ternaryToDecimal = function(ternary) {
 TTTController.decimalToTernary = function(decimal) {
 	var result = "";
 	if (decimal == 0) return "0000000000";
-	
+
 	while (decimal > 0) {
 		result = decimal % 3 + result;
 		decimal = Math.floor(decimal / 3);
@@ -286,54 +286,73 @@ TTTController.getGame = function(db, playersObj, callback) {
 // move is the cell number
 TTTController.playerMove = function(db, playersObj, move, callback) {
 	var self = this;
-	var result = {message: "success"};
+	var qresult = {message: "success"};
+	callback = callback || self.no_op;
 
-	try {
-		if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
-		db.query(self.makeChannelQuery(playersObj)).on('row', function(row) {
-			var prevState = self.decimalToTernary(row.gamestate);
-			if (prevState[move] == 0) {
-				prevState[move] = prevState[0] === "0" ? "1" : "2";
+	var query = db.query(self.makeChannelQuery(playersObj));
+	query.on('row', function(row) {
+		if (row.gamerunning == "NO") {
+			
+			qresult.message = GAMENOTRUNNING;
+			callback(qresult);
+		
+		} else {
 
-				// switch turns
-				prevState[0] = prevState[0] === "0" ? "1" : "0";
+			self.matchPlayers(db, playersObj, function() {
+				// TODO
+				var prevState = self.decimalToTernary(row.gamestate);
+				if (prevState[move] == 0) {
+					prevState[move] = prevState[0] === "0" ? "1" : "2";
 
-				if (self.gameWon(prevState)) {
-					// game won, game no longer running, winner produced
-					db.query(
-						self.makeUpdateQuery(
-							self.ternaryToDecimal(prevState), 
-							(prevState[0] === "0" ? playersObj.player1 : playersObj.player2), 
-							"NO", 
-							playersObj
-						)
-					);
-					
-					result.gameWon = true;
+					// switch turns
+					prevState[0] = prevState[0] === "0" ? "1" : "0";
+
+					if (self.gameWon(prevState)) {
+						// game won, game no longer running, winner produced
+						db.query(
+							self.makeUpdateQuery(
+								self.ternaryToDecimal(prevState), 
+								(prevState[0] === "0" ? playersObj.player1 : playersObj.player2), 
+								"NO", 
+								playersObj
+							)
+						);
+						
+						result.gameWon = true;
+
+					} else {
+
+						db.query(
+							self.makeUpdateQuery(
+								self.ternaryToDecimal(prevState), "", "YES", playersObj
+							)
+						);
+
+						result.gameWon = false;
+
+					}
 
 				} else {
-
-					db.query(
-						self.makeUpdateQuery(
-							self.ternaryToDecimal(prevState), "", "YES", playersObj
-						)
-					);
-
-					result.gameWon = false;
-
+					// the cell was already filled
+					throw "ERROR: invalid move";
 				}
 
-			} else {
-				// the cell was already filled
-				throw "ERROR: invalid move";
-			}
+			}, function() {
 
-		});
-	} catch (errmsg) {
-		result.message = errmsg;
-	}
+				qresult.message = WRONGPLAYERSERROR;
+				callback(qresult);
+			
+			});
 
-	if (typeof callback === "function") callback(result);
+		}
+	});
+
+	query.on('end', function(result) {
+		if (result.rowCount === 0) {
+			qresult.message = GAMENOTRUNNING;
+			callback(qresult);
+		}
+	});
 
 }
 
