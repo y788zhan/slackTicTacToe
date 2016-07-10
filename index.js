@@ -69,7 +69,7 @@ app.post('/start', function(req, res) {
 	    "text": "Would you like to play a game?"
 	});
 	console.log(req.body.response_url);
-	db.query('SELECT * FROM ttt;')
+	db.query("SELECT * FROM ttt WHERE channelID = 'abcd';")
 	  .on ('row', function(row) {
 	  	request({
 		    url: req.body.response_url,
