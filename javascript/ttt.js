@@ -1,7 +1,8 @@
 var TTTGame = {};
 
 var WRONGPLAYERSERROR = "ERROR: You're not one of the players of this game";
-var GAMEISRUNNING = "ERROR: A game is currently running";
+var GAMEISRUNNING     = "ERROR: A game is currently running";
+var GAMENOTRUNNING    = "ERROR: There is no game running currently";
 
 /* game state is expressed as 10-bit ternary string, but stored as a decimal value
 left-most bit is the turn bit
@@ -198,18 +199,38 @@ TTTGame.quitGame = function(db, playersObj, callback) {
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
 
-	self.matchPlayers(db, playersObj, function() {
+	// check to see if game exists
+	var query = db.query(self.makeChannelQuery(playersObj));
+	query.on('row', function(row) {
+		if (row.gamerunning == "NO") {
+			// there is no game being played
+			qresult.message = GAMENOTRUNNING;
+			callback(qresult);
+		
+		} else {
+		
+			self.matchPlayers(db, playersObj, function() {
 
-		db.query(self.makeUpdateQuery(0, "", "NO", playersObj))
-			.on('end', function(result) {
+				db.query(self.makeUpdateQuery(0, "", "NO", playersObj))
+					.on('end', function(result) {
+						callback(qresult);
+					});
+
+			}, function() {
+
+				qresult.message = WRONGPLAYERSERROR;
 				callback(qresult);
+			
 			});
+		
+		}
+	});
 
-	}, function() {
-
-		qresult.message = WRONGPLAYERSERROR;
-		callback(qresult);
-	
+	query.on('end', function(result) {
+		if (result.rowCount === 0) {
+			qresult.message = GAMENOTRUNNING;
+			callback(qresult);
+		}
 	});
 
 }
