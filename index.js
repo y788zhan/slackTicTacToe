@@ -122,7 +122,7 @@ app.post('/gamestate', function(req, res) {
 			console.log(result);
 			delayedRes.text = String(result.gameState);
 			console.log(delayedRes.text);
-			delayedRes.text = "123";
+			delayedRes.text = "123" + result.gameState;
 		} else {
 			delayedRes.text = result.message;
 		}
