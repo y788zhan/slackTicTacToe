@@ -35,8 +35,6 @@ playersObj schema:
 
 
 String.prototype.replaceAt=function(index, character) {
-	console.log(this, this.length, index, character);
-	console.log(this.substr(0, index), character, this.substr(index + 1, this.length));
     return this.substr(0, index) + character + this.substr(index + 1, this.length);
 }
 
@@ -82,7 +80,6 @@ TTTController.decimalToTernary = function(decimal) {
 	}
 
 	var len = result.length;
-	console.log(len);
 	for (var i = len; i < 10; ++i) {
 		// leftpad with 0
 		result = "0" + result;
@@ -293,7 +290,7 @@ TTTController.getGame = function(db, playersObj, callback) {
 
 // move is the cell number
 TTTController.playerMove = function(db, playersObj, move, callback) {
-	console.log("MOVE: " + move);
+	move = Number(move);
 
 	var self = this;
 	var qresult = {message: "success"};
