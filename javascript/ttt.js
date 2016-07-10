@@ -120,13 +120,18 @@ TTTGame.makeInsertQuery = function(playersObj) {
 
 }
 
-TTTGame.matchPlayers = function(db, playersObj) {
+// emulate Promise pattern
+TTTGame.matchPlayers = function(db, playersObj, resolve, reject) {
 	var self = this;
+	resolve = resolve || self.no_op;
+	reject = reject || self.no_op;
 
 	db.query(self.makeChannelQuery(playersObj)).on('row', function(row) {
-		console.log(playersObj.player1, row.player1, row.player2);
-		console.log(((row.player1 == playersObj.player1) || (row.player2 == playersObj.player1)));
-		return ((row.player1 == playersObj.player1) || (row.player2 == playersObj.player1));
+		if ((row.player1 == playersObj.player1) || (row.player2 == playersObj.player1)) {
+			resolve();
+		} else {
+			reject();
+		};
 	});
 }
 
@@ -193,19 +198,19 @@ TTTGame.quitGame = function(db, playersObj, callback) {
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
 
-	if (!self.matchPlayers(db, playersObj)) {
-	
-		qresult.message = WRONGPLAYERSERROR;
-		callback(qresult);
-	
-	} else {
-	
+	self.matchPlayers(db, playersObj, function() {
+
 		db.query(self.makeUpdateQuery(0, "", "NO", playersObj))
 			.on('end', function(result) {
 				callback(qresult);
 			});
+
+	}, function() {
+
+		qresult.message = WRONGPLAYERSERROR;
+		callback(qresult);
 	
-	}
+	});
 
 }
 
