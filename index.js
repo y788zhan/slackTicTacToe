@@ -114,7 +114,7 @@ app.get('/gamestate', function(req, res) {
 	});
 
 	var po = TTT.getPlayersObj(req);
-	var delayedRes {};
+	var delayedRes = {};
 
 	TTT.getGame(db, po, function(result) {
 
