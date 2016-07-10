@@ -310,7 +310,7 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 
 				var prevState = self.decimalToTernary(row.gamestate);
 				var newState;
-				console.log("PREVSTATE: " + prevState);
+				console.log("PREVSTATE: " + prevState + " " + (typeof prevState));
 
 				if (prevState[move] == 0) {
 					prevState = prevState.replaceAt(move, prevState[0] === "0" ? "1" : "2");
