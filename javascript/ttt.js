@@ -134,39 +134,37 @@ TTTGame.createNewGame = function(db, playersObj, callback) {
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
 
-	try {
-		var query = db.query(self.makeChannelQuery(playersObj));
-		
-		query.on('row', function(row) {
-			if (row) {
-				// this channel has previously played a game
-				console.log(row);
-				if (row.gamerunning === "YES") {
-					throw GAMEISRUNNING;
-				} else {
-					db.query(self.makeUpdateQuery(0, "", "YES", playersObj))
-						.on('end', function(result) {
-							callback(qresult);
-						});
-				}
-			}
-		});
-		
-		query.on('end', function(result) {
-			if (result.rowCount == 0) {
-				// this channel has never played a game
-				console.log(self.makeInsertQuery(playersObj));
-				db.query(self.makeInsertQuery(playersObj))
+
+	var query = db.query(self.makeChannelQuery(playersObj));
+	
+	query.on('row', function(row) {
+		if (row) {
+			// this channel has previously played a game
+			console.log(row);
+			if (row.gamerunning === "YES") {
+				// a game is currently running
+				qresult.message = GAMEISRUNNING;
+				callback(qresult);
+			} else {
+				db.query(self.makeUpdateQuery(0, "", "YES", playersObj))
 					.on('end', function(result) {
 						callback(qresult);
 					});
 			}
-		});
+		}
+	});
+	
+	query.on('end', function(result) {
+		if (result.rowCount == 0) {
+			// this channel has never played a game
+			console.log(self.makeInsertQuery(playersObj));
+			db.query(self.makeInsertQuery(playersObj))
+				.on('end', function(result) {
+					callback(qresult);
+				});
+		}
+	});
 
-	} catch (errmsg) {
-		qresult.message = errmsg;
-		callback(qresult);
-	}
 }
 
 TTTGame.restartGame = function(db, playersObj, callback) {
