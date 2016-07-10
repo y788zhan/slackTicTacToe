@@ -130,6 +130,8 @@ TTTGame.createNewGame = function(db, playersObj, callback) {
 	var self = this;
 	var result = {message: "success"};
 
+	console.log(db);
+
 	try {
 		console.log(self.makeChannelQuery(playersObj));
 		var query = db.query(self.makeChannelQuery(playersObj));
