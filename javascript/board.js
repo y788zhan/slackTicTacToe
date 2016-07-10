@@ -122,6 +122,8 @@ TTTBoard.cellMap = {
 TTTBoard.makeBoard = function(gameState) {
     var self = this;
 
+    gameState = String(gameState);
+
     var arr = gameState.split("").slice(1, 10);
     var attach1 = self.board.attachments[0];
     var attach2 = self.board.attachments[1];
@@ -132,6 +134,8 @@ TTTBoard.makeBoard = function(gameState) {
         attach2.actions[i].text = self.cellMap[arr[i + 3]];
         attach3.actions[i].text = self.cellMap[arr[i + 6]];
     }
+
+    return self.board;
 
 }
 
