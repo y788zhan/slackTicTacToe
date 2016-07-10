@@ -1,4 +1,4 @@
-var TTTGame = {};
+var TTTController = {};
 
 var WRONGPLAYERSERROR = "ERROR: You're not one of the players of this game";
 var GAMEISRUNNING     = "ERROR: A game is currently running";
@@ -33,9 +33,9 @@ playersObj schema:
 	player2   : string
 */
 
-TTTGame.no_op = function() {}
+TTTController.no_op = function() {}
 
-TTTGame.getPlayersObj = function(req) {
+TTTController.getPlayersObj = function(req) {
 	var body = req.body;
 	return {
 		teamID    : body.team_id,
@@ -46,28 +46,45 @@ TTTGame.getPlayersObj = function(req) {
 }
 
 // receives a ternary string
-TTTGame.ternaryToDecimal = function(ternary) {
+TTTController.ternaryToDecimal = function(ternary) {
 	var result = 0;
 	var str = String(ternary);
+	if (ternary == "0000000000") return 0;
+
+	// remove leadings zeros
+	var i = 0;
+	while (str[i] == "0") { ++i; }
+	str = str.substr(i, str.length);
+
 	for (var i = str.length - 1; i >= 0; --i) {
 		result += str[i] * Math.pow(3, str.length - 1 - i);
 	}
+
 	return result;
 }
 
 // returns a ternary string
-TTTGame.decimalToTernary = function(decimal) {
+TTTController.decimalToTernary = function(decimal) {
 	var result = "";
-	if (decimal == 0) return "0";
+	if (decimal == 0) return "0000000000";
+	
 	while (decimal > 0) {
 		result = decimal % 3 + result;
 		decimal = Math.floor(decimal / 3);
 	}
+
+	var len = result.length;
+	console.log(len);
+	for (var i = len; i < 10; ++i) {
+		// leftpad with 0
+		result = "0" + result;
+	}
+
 	return result;
 }
 
 // receives a ternary string
-TTTGame.gameWon = function(gameState) {
+TTTController.gameWon = function(gameState) {
 	var one   = gameState[1];
 	    two   = gameState[2];
 	    three = gateState[3];
@@ -87,14 +104,14 @@ TTTGame.gameWon = function(gameState) {
 		    ( three == five  && three == seven ));
 }
 
-TTTGame.makeChannelQuery = function(playersObj) {
+TTTController.makeChannelQuery = function(playersObj) {
 	return "SELECT * \n"          + 
 		   "FROM TTTRECORDS \n"   + 
 		   "WHERE CHANNELID = " + "'" + playersObj.channelID + "' \n" +
 		   "AND   TEAMID    = " + "'" + playersObj.teamID + "';";
 }
 
-TTTGame.makeUpdateQuery = function(gameState, winner, gameRunning, playersObj) {
+TTTController.makeUpdateQuery = function(gameState, winner, gameRunning, playersObj) {
 	return "UPDATE TTTRECORDS \n"   +
 	       "SET   GAMESTATE   = " + gameState + ",\n" + 
 	       "      WINNER      = " + "'" + winner + "',\n" +
@@ -103,7 +120,7 @@ TTTGame.makeUpdateQuery = function(gameState, winner, gameRunning, playersObj) {
 	       "AND   TEAMID      = " + "'" + playersObj.teamID + "';";
 }
 
-TTTGame.makeInsertQuery = function(playersObj) {
+TTTController.makeInsertQuery = function(playersObj) {
 	return "INSERT INTO TTTRECORDS (TEAMID,     \n" +
 	       "                        CHANNELID,  \n" +
 	       "                        PLAYER1,    \n" +
@@ -122,7 +139,7 @@ TTTGame.makeInsertQuery = function(playersObj) {
 }
 
 // emulate Promise pattern
-TTTGame.matchPlayers = function(db, playersObj, resolve, reject) {
+TTTController.matchPlayers = function(db, playersObj, resolve, reject) {
 	var self = this;
 	resolve = resolve || self.no_op;
 	reject = reject || self.no_op;
@@ -137,7 +154,7 @@ TTTGame.matchPlayers = function(db, playersObj, resolve, reject) {
 }
 
 // callbacks have a result parameter
-TTTGame.createNewGame = function(db, playersObj, callback) {
+TTTController.createNewGame = function(db, playersObj, callback) {
 	var self = this;
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
@@ -181,7 +198,7 @@ TTTGame.createNewGame = function(db, playersObj, callback) {
 }
 
 /*
-TTTGame.restartGame = function(db, playersObj, callback) {
+TTTController.restartGame = function(db, playersObj, callback) {
 	var self = this;
 	var result = {message: "success"};
 
@@ -196,7 +213,7 @@ TTTGame.restartGame = function(db, playersObj, callback) {
 }
 */
 
-TTTGame.quitGame = function(db, playersObj, callback) {
+TTTController.quitGame = function(db, playersObj, callback) {
 	var self = this;
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
@@ -237,7 +254,7 @@ TTTGame.quitGame = function(db, playersObj, callback) {
 
 }
 
-TTTGame.getGame = function(db, playersObj, callback) {
+TTTController.getGame = function(db, playersObj, callback) {
 	var self = this;
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
@@ -251,7 +268,7 @@ TTTGame.getGame = function(db, playersObj, callback) {
 		
 		} else {
 
-			qresult.gameState = row.gamestate;
+			qresult.gameState = self.decimalToTernary(row.gamestate);
 			callback(qresult);
 		
 		}
@@ -267,7 +284,7 @@ TTTGame.getGame = function(db, playersObj, callback) {
 }
 
 // move is the cell number
-TTTGame.playerMove = function(db, playersObj, move, callback) {
+TTTController.playerMove = function(db, playersObj, move, callback) {
 	var self = this;
 	var result = {message: "success"};
 
@@ -320,4 +337,4 @@ TTTGame.playerMove = function(db, playersObj, move, callback) {
 
 }
 
-module.exports = TTTGame;
+module.exports = TTTController;

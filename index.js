@@ -1,9 +1,10 @@
-var express    = require('express');
-var pg         = require('pg');
-var bodyParser = require('body-parser');
-var request    = require('request');
-var TTT        = require('./javascript/ttt');
-var app        = express();
+var express       = require('express');
+var pg            = require('pg');
+var bodyParser    = require('body-parser');
+var request       = require('request');
+var TTTController = require('./javascript/ttt');
+var TTTBoard      = require('./javascript/board');
+var app           = express();
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -65,13 +66,13 @@ app.post('/start', function(req, res) {
 		"text": "Loading ..."
 	});
 	
-	var po = TTT.getPlayersObj(req);
+	var po = TTTController.getPlayersObj(req);
 	var delayedRes = {};
 
-	TTT.createNewGame(db, po, function(result) {
+	TTTController.createNewGame(db, po, function(result) {
 
 		if (result.message === "success") {
-			// delayedRes.text = TTT.printBoard(0);
+			// delayedRes.text = TTTBoard.printBoard(0);
 			delayedRes.text = "YAY";
 		} else {
 			delayedRes.text = result.message;
@@ -88,10 +89,10 @@ app.post('/quit', function(req, res) {
 		"text": "Loading ..."
 	});
 
-	var po = TTT.getPlayersObj(req);
+	var po = TTTController.getPlayersObj(req);
 	var delayedRes = {};
 
-	TTT.quitGame(db, po, function(result) {
+	TTTController.quitGame(db, po, function(result) {
 
 		if (result.message === "success") {
 			delayedRes.text = "Game quit";
@@ -113,16 +114,13 @@ app.post('/gamestate', function(req, res) {
 		"text": "Loading ..."
 	});
 
-	var po = TTT.getPlayersObj(req);
+	var po = TTTController.getPlayersObj(req);
 	var delayedRes = {};
 
-	TTT.getGame(db, po, function(result) {
+	TTTController.getGame(db, po, function(result) {
 
 		if (result.message === "success") {
-			console.log(result);
-			delayedRes.text = String(result.gameState);
-			console.log(delayedRes.text);
-			delayedRes.text = "123" + result.gameState;
+			delayedRes.text = TTTBoard.printBoard(result.gameState);
 		} else {
 			delayedRes.text = result.message;
 		}
