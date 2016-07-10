@@ -120,7 +120,7 @@ app.post('/gamestate', function(req, res) {
 	TTTController.getGame(db, po, function(result) {
 
 		if (result.message === "success") {
-			delayedRes.text = TTTBoard.printBoard(result.gameState);
+			delayedRes = TTTBoard.printBoard(result.gameState);
 		} else {
 			delayedRes.text = result.message;
 		}
