@@ -1,6 +1,7 @@
 var TTTGame = {};
 
 var WRONGPLAYERSERROR = "ERROR: You're not one of the players of this game";
+var GAMEISRUNNING = "ERROR: A game is currently running";
 
 /* game state is expressed as 10-bit ternary string, but stored as a decimal value
 left-most bit is the turn bit
@@ -107,79 +108,109 @@ TTTGame.matchPlayers = function(db, playersObj) {
 	});
 }
 
-TTTGame.createNewGame = function(db, playersObj) {
+// callbacks have a result parameter
+TTTGame.createNewGame = function(db, playersObj, callback) {
 	var self = this;
+	var result = {message: "success"};
 
-	db.query(self.makeChannelQuery(playersObj)).on('row', function(row) {
-		if (row) {
-			// this channel has previously played a game
-			if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
+	try {
+		db.query(self.makeChannelQuery(playersObj)).on('row', function(row) {
+			if (row) {
+				// this channel has previously played a game
+				if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
 
-			if (row.gamerunning === "YES") {
-				throw "ERROR: A game is currently running";
+				if (row.gamerunning === "YES") {
+					throw GAMEISRUNNING;
+				} else {
+					db.query(self.makeUpdateQuery(0, "", "YES", playersObj));
+				}
 			} else {
-				db.query(self.makeUpdateQuery(0, "", "YES", playersObj));
+				// this channel has never played a game
+				db.query(self.makeInsertQuery(playersObj));
 			}
-		} else {
-			// this channel has never played a game
-			db.query(self.makeInsertQuery(playersObj));
-		}
-	});
+		});
+	} catch (errmsg) {
+		result.message = errmsg;
+	}
+
+	if (typeof callback === "function") callback(result);
 }
 
-TTTGame.restartGame = function(db, playersObj) {
+TTTGame.restartGame = function(db, playersObj, callback) {
 	var self = this;
+	var result = {message: "success"};
 
-	if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
-	db.query(self.makeUpdateQuery(0, "", "YES", playersObj));
+	try {
+		if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
+		db.query(self.makeUpdateQuery(0, "", "YES", playersObj));
+	} catch (errmsg) {
+		result.message = errmsg;
+	}
+
+	if (typeof callback === "function") callback(result);
 }
 
-TTTGame.quitGame = function(db, playersObj) {
+TTTGame.quitGame = function(db, playersObj, callback) {
 	var self = this;
+	var result = {message: "success"};
 
-	if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
-	db.query(self.makeUpdateQuery(0, "", "NO", playersObj));
+	try {
+		if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
+		db.query(self.makeUpdateQuery(0, "", "NO", playersObj));
+	} catch (errmsg) {
+		result.message = errmsg;
+	}
+
+	if (typeof callback == "function") callback(result);
 }
 
 // move is the cell number
-TTTGame.playerMove = function(db, playersObj, move) {
+TTTGame.playerMove = function(db, playersObj, move, callback) {
 	var self = this;
+	var result = {message: "success"};
 
-	if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
-	db.query(self.makeChannelQuery(playersObj)).on('row', function(row) {
-		var prevState = self.decimalToTernary(row.gamestate);
-		if (prevState[move] == 0) {
-			prevState[move] = prevState[0] === "0" ? "1" : "2";
+	try {
+		if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
+		db.query(self.makeChannelQuery(playersObj)).on('row', function(row) {
+			var prevState = self.decimalToTernary(row.gamestate);
+			if (prevState[move] == 0) {
+				prevState[move] = prevState[0] === "0" ? "1" : "2";
 
-			if (self.gameWon(prevState)) {
-				// game won, game no longer running, winner produced, returns true
-				db.query(
-					self.makeUpdateQuery(
-						self.ternaryToDecimal(prevState), 
-						(prevState[0] === "0" ? playersObj.player1 : playersObj.player2), 
-						"NO", 
-						playersObj
-					)
-				);
-				
-				return true;
+				if (self.gameWon(prevState)) {
+					// game won, game no longer running, winner produced
+					db.query(
+						self.makeUpdateQuery(
+							self.ternaryToDecimal(prevState), 
+							(prevState[0] === "0" ? playersObj.player1 : playersObj.player2), 
+							"NO", 
+							playersObj
+						)
+					);
+					
+					result.gameWon = true;
+
+				} else {
+
+					db.query(
+						self.makeUpdateQuery(
+							self.ternaryToDecimal(prevState), "", "YES", playersObj
+						)
+					);
+
+					result.gameWon = false;
+
+				}
 
 			} else {
-
-				db.query(
-					self.makeUpdateQuery(
-						self.ternaryToDecimal(prevState), "", "YES", playersObj
-					)
-				);
-
-				return false;
-
+				throw "ERROR: invalid move";
 			}
-		} else {
-			throw "ERROR: invalid move";
-		}
 
-	});
+		});
+	} catch (errmsg) {
+		result.message = errmsg;
+	}
+
+	if (typeof callback === "function") callback(result);
 
 }
 
