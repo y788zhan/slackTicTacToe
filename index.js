@@ -108,7 +108,7 @@ app.post('/move', function(req, res) {
 	res.status(200).json({"text": "HI" + req.body.text});
 })
 
-app.get('/gamestate', function(req, res) {
+app.post('/gamestate', function(req, res) {
 	res.status(200).json({
 		"text": "Loading ..."
 	});
