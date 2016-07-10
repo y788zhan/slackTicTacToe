@@ -119,6 +119,7 @@ app.post('/gamestate', function(req, res) {
 	TTT.getGame(db, po, function(result) {
 
 		if (result.message === "success") {
+			console.log(result);
 			delayedRes.text = result.gameState;
 		} else {
 			delayedRes.text = result.message;
