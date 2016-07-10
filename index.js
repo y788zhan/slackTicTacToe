@@ -56,12 +56,12 @@ app.post('/start', function(req, res) {
 		"text": "Loading ..."
 	});
 	
-	var po = TTTGame.getPlayersObj(req);
+	var po = TTT.getPlayersObj(req);
 	var delayedRes = {};
 
 	console.log(po);
 
-	TTTGame.createNewGame(db, po, function(result) {
+	TTT.createNewGame(db, po, function(result) {
 		console.log(result.message);
 
 		if (result.message === "success") {
