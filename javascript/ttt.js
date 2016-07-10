@@ -330,7 +330,7 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 
 						db.query(
 							self.makeUpdateQuery(
-								newState "", "YES", playersObj
+								newState, "", "YES", playersObj
 							)
 						);
 
