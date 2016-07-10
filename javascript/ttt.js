@@ -180,6 +180,7 @@ TTTGame.createNewGame = function(db, playersObj, callback) {
 
 }
 
+/*
 TTTGame.restartGame = function(db, playersObj, callback) {
 	var self = this;
 	var result = {message: "success"};
@@ -193,6 +194,7 @@ TTTGame.restartGame = function(db, playersObj, callback) {
 
 	if (typeof callback === "function") callback(result);
 }
+*/
 
 TTTGame.quitGame = function(db, playersObj, callback) {
 	var self = this;
@@ -222,6 +224,35 @@ TTTGame.quitGame = function(db, playersObj, callback) {
 				callback(qresult);
 			
 			});
+		
+		}
+	});
+
+	query.on('end', function(result) {
+		if (result.rowCount === 0) {
+			qresult.message = GAMENOTRUNNING;
+			callback(qresult);
+		}
+	});
+
+}
+
+TTTGame.getGame = function(db, playersObj, callback) {
+	var self = this;
+	var qresult = {message: "success"};
+	callback = callback || self.no_op;
+
+	var query = db.query(self.makeChannelQuery(playersObj));
+	query.on('row', function(row) {
+		if (row.gamerunning == "NO") {
+			
+			qresult.message = GAMENOTRUNNING;
+			callback(qresult);
+		
+		} else {
+
+			qresult.gameState = row.gameState;
+			callback(qresult);
 		
 		}
 	});

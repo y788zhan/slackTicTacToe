@@ -51,13 +51,10 @@ function postBack(req, body) {
 
 app.post('/usage', function(req, res) {
 	res.status(200).json({
-	    "response_type": "in_channel",
-	    "text": "It's 80 degrees right now." + req.body,
-	    "attachments": [
-	        {
-	            "text":"Partly cloudy today and tomorrow"
-	        }
-	    ]
+	    "text": "\\ttt challenge <user_name> : Starts a tic-tac-toe game with <user_name>\n" +
+	    		"\\ttt quit : Quits current game\n" +
+	    		"\\ttt board : Displays the currently board of the game\n" +
+	    		"\\ttt move [1-9] : Makes your move on a cell"
 	});
 });
 
@@ -106,20 +103,32 @@ app.post('/quit', function(req, res) {
 	});
 })
 
-app.post('/restart', function(req, res) {
-	res.status(200).json({"message": "TODO restart game"});
-})
 
 app.post('/move', function(req, res) {
 	res.status(200).json({"text": "HI" + req.body.text});
 })
 
 app.get('/gamestate', function(req, res) {
-	res.status(200).json({"message": "TODO return game state"});
+	res.status(200).json({
+		"text": "Loading ..."
+	});
+
+	var po = TTT.getPlayersObj(req);
+	var delayedRes {};
+
+	TTT.getGame(db, po, function(result) {
+
+		if (result.message === "success") {
+			delayedRes.text = result.gameState;
+		} else {
+			delayedRes.text = result.message;
+		}
+
+		postBack(req, delayedRes);
+
+	});
+
 });
-
-
-
 
 
 app.listen(app.get('port'), function() {
