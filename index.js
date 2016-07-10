@@ -15,10 +15,13 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 // postgres connection
+var db;
 pg.defaults.ssl = true;
 pg.connect(process.env.DATABASE_URL, function(err, client) {
   if (err) throw err;
   console.log('Connected to postgres! Getting schemas...');
+
+  db = client;
 
   client
     .query('SELECT table_schema,table_name FROM information_schema.tables;')
@@ -63,56 +66,24 @@ app.post('/start', function(req, res) {
 				"+-----------+"
 		*/
 
-	    "text": "Would you like to play a game?",
-	    "attachments": [
-	        {
-	            "text": "Choose a game to play",
-	            "fallback": "You are unable to choose a game",
-	            "callback_id": "wopr_game",
-	            "color": "#3AA3E3",
-	            "attachment_type": "default",
-	            "actions": [
-	                {
-	                    "name": "chess",
-	                    "text": "Chess",
-	                    "type": "button",
-	                    "value": "chess"
-	                },
-	                {
-	                    "name": "maze",
-	                    "text": "Falken's Maze",
-	                    "type": "button",
-	                    "value": "maze"
-	                },
-	                {
-	                    "name": "war",
-	                    "text": "Thermonuclear War",
-	                    "style": "danger",
-	                    "type": "button",
-	                    "value": "war",
-	                    "confirm": {
-	                        "title": "Are you sure?",
-	                        "text": "Wouldn't you prefer a good game of chess?",
-	                        "ok_text": "Yes",
-	                        "dismiss_text": "No"
-	                    }
-	                }
-	            ]
-	        }
-	    ]
-
+	    "text": "Would you like to play a game?"
 	});
 	console.log(req.body.response_url);
-	request({
-	    url: req.body.response_url,
-	    method: "POST",
-	    headers: {
-	    	"content-type": "application/json"
-	    },
-	    body: JSON.stringify({text: "hi"})
-	}, function (error, response, body){
-	    console.log(response);
-	});
+	db.query('SELECT * FROM ttt;')
+	  .on ('row', function(row) {
+	  	request({
+		    url: req.body.response_url,
+		    method: "POST",
+		    headers: {
+		    	"content-type": "application/json"
+		    },
+		    body: JSON.stringify({
+		    	text: JSON.stringify(row)
+		    })
+		}, function (error, response, body){
+		    console.log(response);
+		});
+	  })
 });
 
 
