@@ -24,6 +24,23 @@ Player2 is X
 Player1 goes first
 */
 
+/*
+playersObj schema:
+	teamID    : string,
+	channelID : string,
+	player1   : string,
+	player2   : string
+*/
+TTTGame.getPlayersObj = function(req) {
+	var body = req.body;
+	return {
+		teamID    : body.team_id,
+		channelID : body.channel_id,
+		player1   : body.user_name,
+		player2   : body.text
+	};
+}
+
 // receives a ternary string
 TTTGame.ternaryToDecimal = function(ternary) {
 	var result = 0;
@@ -79,7 +96,7 @@ TTTGame.makeUpdateQuery = function(gameState, winner, gameRunning, playersObj) {
 	       "      WINNER      = " + "'" + winner + "',\n" +
 	       "      GAMERUNNING = " + "'" + gameRunning + "' \n" +
 	       "WHERE CHANNELID   = " + "'" + playersObj.channelID + "' \n" + 
-	       "AND   TEAMID      = " + "'" + playersObj.teamID + "';\n";
+	       "AND   TEAMID      = " + "'" + playersObj.teamID + "';";
 }
 
 TTTGame.makeInsertQuery = function(playersObj) {
@@ -90,13 +107,13 @@ TTTGame.makeInsertQuery = function(playersObj) {
 	       "                        GAMESTATE,  \n" +
 	       "                        WINNER,     \n" +
 	       "                        GAMERUNNING)\n" +
-	       "VALUES (" + playersObj.teamID    + ",\n" +
-	       "        " + playersObj.channelID + ",\n" +
-	       "        " + playersObj.player1   + ",\n" +
-	       "        " + playersObj.player2   + ",\n" +
-	       "        " + 0                    + ",\n" +
-	       "        " + "''"                 + ",\n" +
-	       "        " + "YES);"                 
+	       "VALUES ('" + playersObj.teamID    + "',\n" +
+	       "        '" + playersObj.channelID + "',\n" +
+	       "        '" + playersObj.player1   + "',\n" +
+	       "        '" + playersObj.player2   + "',\n" +
+	       "        "  + 0                    + ",\n" +
+	       "        "  + "''"                 + ",\n" +
+	       "        '" + "YES');"                 
 
 }
 
@@ -117,8 +134,6 @@ TTTGame.createNewGame = function(db, playersObj, callback) {
 		db.query(self.makeChannelQuery(playersObj)).on('row', function(row) {
 			if (row) {
 				// this channel has previously played a game
-				if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
-
 				if (row.gamerunning === "YES") {
 					throw GAMEISRUNNING;
 				} else {
@@ -176,6 +191,9 @@ TTTGame.playerMove = function(db, playersObj, move, callback) {
 			if (prevState[move] == 0) {
 				prevState[move] = prevState[0] === "0" ? "1" : "2";
 
+				// switch turns
+				prevState[0] = prevState[0] === "0" ? "1" : "0";
+
 				if (self.gameWon(prevState)) {
 					// game won, game no longer running, winner produced
 					db.query(
@@ -202,6 +220,7 @@ TTTGame.playerMove = function(db, playersObj, move, callback) {
 				}
 
 			} else {
+				// the cell was already filled
 				throw "ERROR: invalid move";
 			}
 

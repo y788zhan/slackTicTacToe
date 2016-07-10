@@ -51,35 +51,33 @@ app.post('/usage', function(req, res) {
 
 
 app.post('/start', function(req, res) {
+	// ephemeral
 	res.status(200).json({
-	    /*"response_type": "in_channel",
-	    "text": "+-----------+\n" +
-	    		"| O | X | X |\n" +
- 				"+---+---+---+\n" +
-				"| O | X | X |\n" +
-				"+---+---+---+\n" +
-				"|   |   |   |\n" +
-				"+-----------+"
-		*/
-
-	    "text": "Would you like to play a game?"
+		"text": "Loading ..."
 	});
-	console.log(req.body.response_url);
-	db.query("SELECT * FROM ttt WHERE channelID = 'abcd';")
-	  .on ('row', function(row) {
-	  	request({
-		    url: req.body.response_url,
-		    method: "POST",
-		    headers: {
-		    	"content-type": "application/json"
-		    },
-		    body: JSON.stringify({
-		    	text: JSON.stringify(row)
-		    })
-		}, function (error, response, body){
-		    console.log(response);
+	
+	var po = TTTGame.getPlayersObj(req);
+	var delayedRes = {};
+
+	TTTGame.createNewGame(db, po, function(result) {
+		console.log(result.message);
+
+		if (result.message === "success") {
+			delayedRes.text = "YAY";
+		} else {
+			delayedRes.text = result.message;
+		}
+
+		request({
+			url: req.body.response_url,
+			method: "POST",
+			headers: {
+				"content-type": "application/json"
+			},
+			body: JSON.stringify(delayedRes)
 		});
-	  })
+	});
+
 });
 
 
