@@ -151,6 +151,9 @@ TTTGame.createNewGame = function(db, playersObj, callback) {
 				db.query(self.makeInsertQuery(playersObj));
 			}
 		});
+		query.on('error' ,function() {
+			console.log("ERROR");
+		})
 		query.on('end', function(result) {
 			console.log("ROWCOUNT: " + result.rowCount);
 		});
