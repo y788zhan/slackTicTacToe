@@ -115,8 +115,13 @@ app.post('/move', function(req, res) {
 
 	TTTController.playerMove(db, po, req.body.text, function(result) {
 		if (result.message === "success") {
+			
 			delayedRes = TTTBoard.makeBoard(result.gameState);
-			if (result.gameWon) delayedRes.text = result.winner + " HAS WON";
+			if (result.gameWon) {
+				delayedRes.text = result.winner + " HAS WON";
+				delayedRes.attachments[0].text = "Game ended";
+			}
+
 		} else {
 			delayedRes.text = result.message;
 		}

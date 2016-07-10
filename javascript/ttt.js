@@ -94,14 +94,14 @@ TTTController.gameWon = function(gameState) {
 	    seven = gameState[7];
 	    eight = gameState[8];
 	    nine  = gameState[9];
-	return (( one   == two   && one   == three ) ||
-		    ( four  == five  && four  == six   ) ||
-		    ( seven == eight && seven == nine  ) ||
-		    ( one   == four  && one   == seven ) ||
-		    ( two   == five  && two   == eight ) ||
-		    ( three == six   && three == nine  ) ||
-		    ( one   == five  && one   == nine  ) ||
-		    ( three == five  && three == seven ));
+	return (( one   == two   && one   == three && one   != 0) ||
+		    ( four  == five  && four  == six   && four  != 0) ||
+		    ( seven == eight && seven == nine  && seven != 0) ||
+		    ( one   == four  && one   == seven && one   != 0) ||
+		    ( two   == five  && two   == eight && two   != 0) ||
+		    ( three == six   && three == nine  && three != 0) ||
+		    ( one   == five  && one   == nine  && one   != 0) ||
+		    ( three == five  && three == seven && three != 0));
 }
 
 TTTController.makeChannelQuery = function(playersObj) {
@@ -308,6 +308,8 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 
 				if (prevState[move] == 0) {
 					prevState[move] = prevState[0] === "0" ? "1" : "2";
+
+					console.log("AFTER MOVE: " + prevState);
 
 					if (self.gameWon(prevState)) {
 						// game won, game no longer running, winner produced
