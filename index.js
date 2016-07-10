@@ -125,6 +125,8 @@ app.post('/gamestate', function(req, res) {
 			delayedRes.text = result.message;
 		}
 
+		console.log(JSON.stringify(delayedRes));
+
 		postBack(req, delayedRes);
 
 	});
