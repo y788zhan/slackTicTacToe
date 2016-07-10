@@ -168,7 +168,7 @@ TTTGame.playerMove = function(db, playersObj, move) {
 
 				db.query(
 					self.makeUpdateQuery(
-						self.ternaryToDecimal(prevState), "", "YES", playersObj;
+						self.ternaryToDecimal(prevState), "", "YES", playersObj
 					)
 				);
 
