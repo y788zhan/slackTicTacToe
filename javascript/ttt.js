@@ -131,9 +131,12 @@ TTTGame.createNewGame = function(db, playersObj, callback) {
 	var result = {message: "success"};
 
 	try {
+		console.log(self.makeChannelQuery(playersObj));
+
 		db.query(self.makeChannelQuery(playersObj)).on('row', function(row) {
 			if (row) {
 				// this channel has previously played a game
+				console.log(row);
 				if (row.gamerunning === "YES") {
 					throw GAMEISRUNNING;
 				} else {
@@ -141,6 +144,7 @@ TTTGame.createNewGame = function(db, playersObj, callback) {
 				}
 			} else {
 				// this channel has never played a game
+				console.log(self.makeInsertQuery(playersObj));
 				db.query(self.makeInsertQuery(playersObj));
 			}
 		});
