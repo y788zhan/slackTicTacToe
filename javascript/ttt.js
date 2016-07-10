@@ -139,29 +139,34 @@ TTTGame.createNewGame = function(db, playersObj, callback) {
 	
 	query.on('row', function(row) {
 		if (row) {
+
 			// this channel has previously played a game
-			console.log(row);
 			if (row.gamerunning === "YES") {
+
 				// a game is currently running
 				qresult.message = GAMEISRUNNING;
 				callback(qresult);
+			
 			} else {
+
 				db.query(self.makeUpdateQuery(0, "", "YES", playersObj))
 					.on('end', function(result) {
 						callback(qresult);
 					});
+			
 			}
 		}
 	});
 	
 	query.on('end', function(result) {
 		if (result.rowCount == 0) {
+
 			// this channel has never played a game
-			console.log(self.makeInsertQuery(playersObj));
 			db.query(self.makeInsertQuery(playersObj))
 				.on('end', function(result) {
 					callback(qresult);
 				});
+		
 		}
 	});
 
@@ -183,16 +188,23 @@ TTTGame.restartGame = function(db, playersObj, callback) {
 
 TTTGame.quitGame = function(db, playersObj, callback) {
 	var self = this;
-	var result = {message: "success"};
+	var qresult = {message: "success"};
+	callback = callback || self.no_op;
 
-	try {
-		if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
-		db.query(self.makeUpdateQuery(0, "", "NO", playersObj));
-	} catch (errmsg) {
-		result.message = errmsg;
+	if (!self.matchPlayers(db, playersObj)) {
+	
+		qresult.message = WRONGPLAYERSERROR;
+		callback(qresult);
+	
+	} else {
+	
+		db.query(self.makeUpdateQuery(0, "", "NO", playersObj))
+			.on('end', function(result) {
+				callback(qresult);
+			});
+	
 	}
 
-	if (typeof callback == "function") callback(result);
 }
 
 // move is the cell number

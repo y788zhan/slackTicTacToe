@@ -30,13 +30,25 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
       //console.log(JSON.stringify(row));
     });
 });
-/*
-app.get('/', function(request, response) {
-  response.render('pages/index');
-});
-*/
+
+
+
+
 
 // TIC TAC TOE API ENDPOINTS
+
+function postBack(req, body) {
+	request({
+		url: req.body.response_url,
+		method: "POST",
+		headers: {
+			"content-type": "application/json"
+		},
+		body: JSON.stringify(body)
+	});
+}
+
+
 app.post('/usage', function(req, res) {
 	res.status(200).json({
 	    "response_type": "in_channel",
@@ -59,32 +71,27 @@ app.post('/start', function(req, res) {
 	var po = TTT.getPlayersObj(req);
 	var delayedRes = {};
 
-	console.log(po);
-
 	TTT.createNewGame(db, po, function(result) {
-		console.log(result.message);
 
 		if (result.message === "success") {
+			// delayedRes.text = TTT.printBoard(0);
 			delayedRes.text = "YAY";
 		} else {
 			delayedRes.text = result.message;
 		}
 
-		request({
-			url: req.body.response_url,
-			method: "POST",
-			headers: {
-				"content-type": "application/json"
-			},
-			body: JSON.stringify(delayedRes)
-		});
+		postBack(req, delayedRes);
 	});
 
 });
 
 
 app.post('/quit', function(req, res) {
-	res.status(200).json({"message": "TODO quit game"});
+	res.status(200).json({
+		"text": "Loading ..."
+	});
+
+	
 })
 
 app.post('/restart', function(req, res) {
