@@ -113,7 +113,7 @@ app.post('/move', function(req, res) {
 	var po = TTTController.getPlayersObj(req);
 	var delayedRes = {}
 
-	TTTController.playerMove(db, po, req.body.text, function() {
+	TTTController.playerMove(db, po, req.body.text, function(result) {
 		if (result.message === "success") {
 			delayedRes = TTTBoard.makeBoard(result.gameState);
 			if (result.gameWon) delayedRes.text = result.winner + " HAS WON";
