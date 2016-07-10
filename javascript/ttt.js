@@ -33,6 +33,12 @@ playersObj schema:
 	player2   : string
 */
 
+
+String.prototype.replaceAt=function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
+}
+
+
 TTTController.no_op = function() {}
 
 TTTController.getPlayersObj = function(req) {
@@ -307,7 +313,7 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 				console.log("PREVSTATE: " + prevState);
 
 				if (prevState[move] == 0) {
-					prevState[move] = prevState[0] === "0" ? "1" : "2";
+					prevState = prevState.replaceAt(move, prevState[0] === "0" ? "1" : "2");
 
 					console.log("AFTER MOVE: " + prevState);
 
@@ -326,11 +332,11 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 						
 						qresult.gameWon = true;
 						qresult.gameState = prevState; // this is the modified prevState
-						qresult.winner = prevState[0] === "0" ? playersObj.player1 : playersObj.player2
+						qresult.winner = prevState[0] === "0" ? playersObj.player1 : playersObj.player2;
 
 					} else {
 						// switch turns
-						prevState[0] = prevState[0] === "0" ? "1" : "0";
+						prevState = prevState.replaceAt(0, prevState[0] === "0" ? "1" : "0");
 						newState = self.ternaryToDecimal(prevState);
 
 						db.query(
