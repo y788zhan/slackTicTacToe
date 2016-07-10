@@ -76,7 +76,7 @@ app.post('/start', function(req, res) {
 	TTTController.createNewGame(db, po, function(result) {
 
 		if (result.message === "success") {
-			delayedRes = TTTBoard.makeBoard(0);
+			delayedRes = TTTBoard.makeBoard("0000000000");
 		} else {
 			delayedRes.text = result.message;
 		}
