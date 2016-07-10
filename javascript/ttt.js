@@ -301,40 +301,50 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 			self.matchPlayers(db, playersObj, function() {
 				// TODO
 				var prevState = self.decimalToTernary(row.gamestate);
+				var newState;
+				console.log("PREVSTATE: " + prevState);
+
 				if (prevState[move] == 0) {
 					prevState[move] = prevState[0] === "0" ? "1" : "2";
 
 					// switch turns
 					prevState[0] = prevState[0] === "0" ? "1" : "0";
 
+					newState = self.ternaryToDecimal(prevState);
+
 					if (self.gameWon(prevState)) {
 						// game won, game no longer running, winner produced
 						db.query(
 							self.makeUpdateQuery(
-								self.ternaryToDecimal(prevState), 
+								newState, 
 								(prevState[0] === "0" ? playersObj.player1 : playersObj.player2), 
 								"NO", 
 								playersObj
 							)
 						);
 						
-						result.gameWon = true;
+						qresult.gameWon = true;
+						qresult.gameState = prevState; // this is the modified prevState
 
 					} else {
 
 						db.query(
 							self.makeUpdateQuery(
-								self.ternaryToDecimal(prevState), "", "YES", playersObj
+								newState "", "YES", playersObj
 							)
 						);
 
-						result.gameWon = false;
+						qresult.gameWon = false;
+						qresult.gameState = prevState; // this is the modified prevState
 
 					}
 
+					callback(qresult);
+
 				} else {
 					// the cell was already filled
-					throw "ERROR: invalid move";
+					qresult.message = "ERROR: invalid move";
+					callback(qresult);
 				}
 
 			}, function() {

@@ -122,6 +122,7 @@ app.post('/gamestate', function(req, res) {
 		if (result.message === "success") {
 			console.log(result.gameState);
 			delayedRes = TTTBoard.makeBoard(result.gameState);
+			console.log(delayedRes);
 		} else {
 			delayedRes.text = result.message;
 		}
