@@ -1,6 +1,6 @@
 var TTTGame = {};
 
-string WRONGPLAYERSERROR = "ERROR: You're not one of the players of this game";
+var WRONGPLAYERSERROR = "ERROR: You're not one of the players of this game";
 
 /* game state is expressed as 10-bit ternary string, but stored as a decimal value
 left-most bit is the turn bit
