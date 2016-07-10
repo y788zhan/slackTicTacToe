@@ -125,7 +125,8 @@ TTTGame.matchPlayers = function(db, playersObj) {
 
 	db.query(self.makeChannelQuery(playersObj)).on('row', function(row) {
 		console.log(playersObj.player1, row.player1, row.player2);
-		return ((row.player1 === playersObj.player1) || (row.player2 === playersObj.player1));
+		console.log(((row.player1 == playersObj.player1) || (row.player2 == playersObj.player1)));
+		return ((row.player1 == playersObj.player1) || (row.player2 == playersObj.player1));
 	});
 }
 
