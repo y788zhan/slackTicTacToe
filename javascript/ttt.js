@@ -132,8 +132,9 @@ TTTGame.createNewGame = function(db, playersObj, callback) {
 
 	try {
 		console.log(self.makeChannelQuery(playersObj));
-
-		db.query(self.makeChannelQuery(playersObj)).on('row', function(row) {
+		var query = db.query(makeChannelQuery(playersObj));
+		query.on('row', function(row) {
+			console.log(row);
 			if (row) {
 				// this channel has previously played a game
 				console.log(row);
@@ -147,6 +148,9 @@ TTTGame.createNewGame = function(db, playersObj, callback) {
 				console.log(self.makeInsertQuery(playersObj));
 				db.query(self.makeInsertQuery(playersObj));
 			}
+		});
+		query.on('end', function(result) {
+			console.log("ROWCOUNT: " + result.rowCount);
 		});
 	} catch (errmsg) {
 		result.message = errmsg;
