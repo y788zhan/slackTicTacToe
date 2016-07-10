@@ -38,7 +38,7 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
 
 // TIC TAC TOE API ENDPOINTS
 
-function postBack(req, body) {
+function postBackSlack(req, body) {
 	request({
 		url: req.body.response_url,
 		method: "POST",
@@ -46,6 +46,12 @@ function postBack(req, body) {
 			"content-type": "application/json"
 		},
 		body: JSON.stringify(body)
+	});
+}
+
+function ephemeralSlack(res) {
+	res.status(200).json({
+		"text": "Loading ..."
 	});
 }
 
@@ -62,9 +68,7 @@ app.post('/usage', function(req, res) {
 
 app.post('/start', function(req, res) {
 	// ephemeral
-	res.status(200).json({
-		"text": "Loading ..."
-	});
+	ephemeralSlack(res);
 	
 	var po = TTTController.getPlayersObj(req);
 	var delayedRes = {};
@@ -78,16 +82,14 @@ app.post('/start', function(req, res) {
 			delayedRes.text = result.message;
 		}
 
-		postBack(req, delayedRes);
+		postBackSlack(req, delayedRes);
 	});
 
 });
 
 
 app.post('/quit', function(req, res) {
-	res.status(200).json({
-		"text": "Loading ..."
-	});
+	ephemeralSlack(res);
 
 	var po = TTTController.getPlayersObj(req);
 	var delayedRes = {};
@@ -100,19 +102,32 @@ app.post('/quit', function(req, res) {
 			delayedRes.text = result.message;
 		}
 
-		postBack(req, delayedRes);
+		postBackSlack(req, delayedRes);
 	});
-})
+});
 
 
 app.post('/move', function(req, res) {
-	res.status(200).json({"text": "HI" + req.body.text});
-})
+	ephemeralSlack(res);
+
+	var po = TTTController.getPlayersObj(req);
+	var delayedRes = {}
+
+	TTTController.playerMove(db, po, req.body.text, function() {
+		if (result.message === "success") {
+			delayedRes = TTTBoard.makeBoard(result.gameState);
+			if (result.gameWon) delayedRes.text = result.winner + " HAS WON";
+		} else {
+			delayedRes.text = result.message;
+		}
+
+		postBackSlack(req, delayedRes);
+
+	});
+});
 
 app.post('/gamestate', function(req, res) {
-	res.status(200).json({
-		"text": "Loading ..."
-	});
+	ephemeralSlack(res);
 
 	var po = TTTController.getPlayersObj(req);
 	var delayedRes = {};
@@ -120,16 +135,12 @@ app.post('/gamestate', function(req, res) {
 	TTTController.getGame(db, po, function(result) {
 
 		if (result.message === "success") {
-			console.log(result.gameState);
 			delayedRes = TTTBoard.makeBoard(result.gameState);
-			console.log(delayedRes);
 		} else {
 			delayedRes.text = result.message;
 		}
 
-		console.log(JSON.stringify(delayedRes));
-
-		postBack(req, delayedRes);
+		postBackSlack(req, delayedRes);
 
 	});
 

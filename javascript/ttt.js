@@ -285,6 +285,8 @@ TTTController.getGame = function(db, playersObj, callback) {
 
 // move is the cell number
 TTTController.playerMove = function(db, playersObj, move, callback) {
+	console.log("MOVE: " + move);
+
 	var self = this;
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
@@ -299,7 +301,7 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 		} else {
 
 			self.matchPlayers(db, playersObj, function() {
-				// TODO
+
 				var prevState = self.decimalToTernary(row.gamestate);
 				var newState;
 				console.log("PREVSTATE: " + prevState);
@@ -307,17 +309,14 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 				if (prevState[move] == 0) {
 					prevState[move] = prevState[0] === "0" ? "1" : "2";
 
-					// switch turns
-					prevState[0] = prevState[0] === "0" ? "1" : "0";
-
-					newState = self.ternaryToDecimal(prevState);
-
 					if (self.gameWon(prevState)) {
 						// game won, game no longer running, winner produced
+						newState = self.ternaryToDecimal(prevState);
+
 						db.query(
 							self.makeUpdateQuery(
 								newState, 
-								(prevState[0] === "0" ? playersObj.player1 : playersObj.player2), 
+								(prevState[0] === "0" ? playersObj.player1 : playersObj.player2), // this is the modifiedPrevState
 								"NO", 
 								playersObj
 							)
@@ -325,8 +324,12 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 						
 						qresult.gameWon = true;
 						qresult.gameState = prevState; // this is the modified prevState
+						qresult.winner = prevState[0] === "0" ? playersObj.player1 : playersObj.player2
 
 					} else {
+						// switch turns
+						prevState[0] = prevState[0] === "0" ? "1" : "0";
+						newState = self.ternaryToDecimal(prevState);
 
 						db.query(
 							self.makeUpdateQuery(
