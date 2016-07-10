@@ -251,7 +251,7 @@ TTTGame.getGame = function(db, playersObj, callback) {
 		
 		} else {
 
-			qresult.gameState = row.gameState;
+			qresult.gameState = row.gamestate;
 			callback(qresult);
 		
 		}
