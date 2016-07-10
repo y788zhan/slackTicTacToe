@@ -91,7 +91,19 @@ app.post('/quit', function(req, res) {
 		"text": "Loading ..."
 	});
 
-	
+	var po = TTT.getPlayersObj(req);
+	var delayedRes = {};
+
+	TTT.quitGame(db, po, function(result) {
+
+		if (result.message === "success") {
+			delayedRes.text = "Game quit";
+		} else {
+			delayedRes.text = result.message;
+		}
+
+		postBack(req, delayedRes);
+	});
 })
 
 app.post('/restart', function(req, res) {
