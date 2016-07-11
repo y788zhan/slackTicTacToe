@@ -228,7 +228,7 @@ TTTController.acceptChallenge = function(db, playersObj, callback) {
 				callback(qresult);
 			
 			} else {
-			console.log('make');
+				console.log(row.player1, playersObj.player1);
 				if (row.player2 == playersObj.player1) {
 					db.query(self.makeUpdateQuery(0, "", "YES", playersObj))
 						.on('end', function(result) {
