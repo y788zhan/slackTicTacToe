@@ -96,7 +96,7 @@ app.post('/usage', function(req, res) {
 
 app.post('/ttt', function(req, res) {
   
-  res.redirect('/usage');
+  res.redirect(307, '/usage');
   
 });
 
