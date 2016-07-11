@@ -73,7 +73,7 @@ function isFromSlack(req, res, next) {
 
 }
 
-app.use('/', isFromSlack);
+//app.use('/', isFromSlack);
 
 // responds with instructions of how to use custom slash commands
 app.post('/usage', function(req, res) {
