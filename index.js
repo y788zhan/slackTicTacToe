@@ -39,168 +39,230 @@ function postBackSlack(req, body) {
 	});
 }
 
-function validationResponseSlack(res) {
+// respond with 3000ms to acknowledge request
+function quickResponseSlack(res) {
 	res.status(200).json({
 		"text": "Loading ..."
 	});
 }
 
+// respond with 500 error upon token mismatch
+function errHandler(res) {
+	res.status(500).json({
+		"message": "ERROR: request not from Slack"
+	});
+}
+
+// check if request originated from Slack
+function validateRequest(db, req, res, resolve, reject) {
+	resolve = resolve || TTTController.no_op;
+	reject = reject || TTTController.no_op;
+
+	// tokens are stored directly in db
+	// TODO (salted) hash tokens
+	db.query("SELECT * FROM SLACKTOKENS WHERE COMMAND = '" + req.body.command + "'";)
+		.on('row', function(row) {
+			if (row.token === req.body.token) {
+				resolve(req, res);
+			} else {
+				reject(res);
+			}
+		});
+}
+
 // responds with instructions of how to use custom slash commands
 app.post('/usage', function(req, res) {
-	res.status(200).json({
+
+	validateRequest(db, req, res, function(req, res) {
+		
+		res.status(200).json({
 	    "text": "/tttchallenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
 	    		"/tttaccept : accepts the tic-tac-toe challenge\n" +
 	    		"/tttreject : rejects the tic-tac-toe challenge\n" +
 	    		"/tttquit : Quits current game\n" +
 	    		"/tttboard : Displays the currently board of the game\n" +
 	    		"/tttmove [1-9] : Makes your move on a cell"
-	});
+		});
+	
+	}, errHandler);
+
 });
 
 // challenges a user to a game
 app.post('/challenge', function(req, res) {
-	validationResponseSlack(res);
+
+	validateRequest(db, req, res, function(req, res) {
+
+		quickResponseSlack(res);
 	
-	var po = TTTController.getPlayersObj(req);
-	var delayedRes = {};
+		var po = TTTController.getPlayersObj(req);
+		var delayedRes = {};
 
-	TTTController.createChallenge(db, po, function(result) {
+		TTTController.createChallenge(db, po, function(result) {
 
-		if (result.message === "success") {
-			delayedRes.response_type = "in_channel";
-			delayedRes.text = req.body.user_name + " has challenged " + req.body.text + " to a game of tic-tac-toe";
-		} else {
-			delayedRes.text = result.message + "\nType /tttusage for help";
-		}
+			if (result.message === "success") {
+				delayedRes.response_type = "in_channel";
+				delayedRes.text = req.body.user_name + " has challenged " + req.body.text + " to a game of tic-tac-toe";
+			} else {
+				delayedRes.text = result.message + "\nType /tttusage for help";
+			}
 
-		postBackSlack(req, delayedRes);
-	});
+			postBackSlack(req, delayedRes);
+		});
+
+	}, errHandler);
 
 });
 
 // accepts a challenge
 app.post('/start', function(req, res) {
-	validationResponseSlack(res);
 
-	var po = TTTController.getPlayersObj(req);
-	var delayedRes = {};
+	validateRequest(db, req, res, function(req, res) {
 
-	TTTController.acceptChallenge(db, po, function(result) {
-		if (result.message === "success") {
+		quickResponseSlack(res);
 
-			delayedRes = JSON.parse(
-				JSON.stringify(
-					TTTBoard.makeBoard("0000000000", result.player1, result.player2)
-				)
-			); // deep copy
-			delayedRes.response_type = "in_channel";
-			delayedRes.text = req.body.user_name + " has accepted the challenged";
-		
-		} else {
-			delayedRes.text = result.message + "\nType /tttusage for help";
-		}
+		var po = TTTController.getPlayersObj(req);
+		var delayedRes = {};
 
-		postBackSlack(req, delayedRes);
-	});
+		TTTController.acceptChallenge(db, po, function(result) {
+			if (result.message === "success") {
+
+				delayedRes = JSON.parse(
+					JSON.stringify(
+						TTTBoard.makeBoard("0000000000", result.player1, result.player2)
+					)
+				); // deep copy
+				delayedRes.response_type = "in_channel";
+				delayedRes.text = req.body.user_name + " has accepted the challenged";
+			
+			} else {
+				delayedRes.text = result.message + "\nType /tttusage for help";
+			}
+
+			postBackSlack(req, delayedRes);
+		});
+
+	}, errHandler);
 
 });
 
 // rejects a challenge
 app.post('/reject', function(req, res) {
-	validationResponseSlack(res);
 
-	var po = TTTController.getPlayersObj(req);
-	var delayedRes = {};
+	validateRequest(db, req, res, function(req, res) {
 
-	TTTController.rejectChallenge(db, po, function(result) {
-		if (result.message === "success") {
-			delayedRes.response_type = "in_channel";
-			delayedRes.text = req.body.user_name + " has declined the challenge";
-		} else {
-			delayedRes.text = result.message + "\nType /tttusage for help";
-		}
+		quickResponseSlack(res);
 
-		postBackSlack(req, delayedRes);
-	});
+		var po = TTTController.getPlayersObj(req);
+		var delayedRes = {};
 
+		TTTController.rejectChallenge(db, po, function(result) {
+			if (result.message === "success") {
+				delayedRes.response_type = "in_channel";
+				delayedRes.text = req.body.user_name + " has declined the challenge";
+			} else {
+				delayedRes.text = result.message + "\nType /tttusage for help";
+			}
 
+			postBackSlack(req, delayedRes);
+		});
+
+	}, errHandler);
+	
 });
 
 // quits a game
 app.post('/quit', function(req, res) {
-	validationResponseSlack(res);
 
-	var po = TTTController.getPlayersObj(req);
-	var delayedRes = {};
+	validateRequest(db, req, res, function(req, res) {
 
-	TTTController.quitGame(db, po, function(result) {
+		quickResponseSlack(res);
 
-		if (result.message === "success") {
-			delayedRes.response_type = "in_channel";
-			delayedRes.text = "Game quit";
-		} else {
-			delayedRes.text = result.message + "\nType /tttusage for help";
-		}
+		var po = TTTController.getPlayersObj(req);
+		var delayedRes = {};
 
-		postBackSlack(req, delayedRes);
-	});
+		TTTController.quitGame(db, po, function(result) {
+
+			if (result.message === "success") {
+				delayedRes.response_type = "in_channel";
+				delayedRes.text = "Game quit";
+			} else {
+				delayedRes.text = result.message + "\nType /tttusage for help";
+			}
+
+			postBackSlack(req, delayedRes);
+		});
+
+	}, errHandler);
+
 });
 
 // performs a move on one of the cells
 app.post('/move', function(req, res) {
-	validationResponseSlack(res);
 
-	var po = TTTController.getPlayersObj(req);
-	var delayedRes = {};
+	validateRequest(db, req, res, function(req, res) {
 
-	TTTController.playerMove(db, po, req.body.text, function(result) {
-		if (result.message === "success") {
-			
-			delayedRes = JSON.parse(
-				JSON.stringify(
-					TTTBoard.makeBoard(result.gameState, result.player1, result.player2)
-				)
-			); // deep copy
-			if (result.gameWon) {
+		quickResponseSlack(res);
 
-				delayedRes.text = result.winner + " HAS WON";
-				delayedRes.attachments[0].text = "Game ended";
-			
+		var po = TTTController.getPlayersObj(req);
+		var delayedRes = {};
+
+		TTTController.playerMove(db, po, req.body.text, function(result) {
+			if (result.message === "success") {
+				
+				delayedRes = JSON.parse(
+					JSON.stringify(
+						TTTBoard.makeBoard(result.gameState, result.player1, result.player2)
+					)
+				); // deep copy
+				if (result.gameWon) {
+
+					delayedRes.text = result.winner + " HAS WON";
+					delayedRes.attachments[0].text = "Game ended";
+				
+				}
+
+			} else {
+				delayedRes.text = result.message + "\nType /tttusage for help";
 			}
 
-		} else {
-			delayedRes.text = result.message + "\nType /tttusage for help";
-		}
+			postBackSlack(req, delayedRes);
 
-		postBackSlack(req, delayedRes);
+		});
 
-	});
+	}, errHandler);
+
 });
 
 app.post('/gamestate', function(req, res) {
-	validationResponseSlack(res);
 
-	var po = TTTController.getPlayersObj(req);
-	var delayedRes = {};
+	validateRequest(db, req, res, function(req, res) {
 
-	TTTController.getGame(db, po, function(result) {
+		quickResponseSlack(res);
 
-		if (result.message === "success") {
+		var po = TTTController.getPlayersObj(req);
+		var delayedRes = {};
+
+		TTTController.getGame(db, po, function(result) {
+
+			if (result.message === "success") {
+				
+				delayedRes = JSON.parse(
+					JSON.stringify(
+						TTTBoard.makeBoard(result.gameState, result.player1, result.player2)
+					)
+				); // deep copy
+				delayedRes.response_type = "ephemeral"; // do not display to everyone
 			
-			delayedRes = JSON.parse(
-				JSON.stringify(
-					TTTBoard.makeBoard(result.gameState, result.player1, result.player2)
-				)
-			); // deep copy
-			delayedRes.response_type = "ephemeral"; // do not display to everyone
-		
-		} else {
-			delayedRes.text = result.message + "\nType /tttusage for help";
-		}
+			} else {
+				delayedRes.text = result.message + "\nType /tttusage for help";
+			}
 
-		postBackSlack(req, delayedRes);
+			postBackSlack(req, delayedRes);
 
-	});
+		});
+
+	}, errHandler);
 
 });
 

@@ -186,7 +186,7 @@ TTTController.createChallenge = function(db, playersObj, callback) {
 				callback(qresult);
 			
 			} else {
-				console.log(self.makeUpdateQuery(0, "", "CHALLENGED", playersObj, true));
+
 				db.query(self.makeUpdateQuery(0, "", "CHALLENGED", playersObj, true))
 					.on('end', function(result) {
 						callback(qresult);
