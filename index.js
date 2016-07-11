@@ -24,7 +24,7 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
   db = client;
 });
 
-
+ 
 
 // TIC TAC TOE API ENDPOINTS
 

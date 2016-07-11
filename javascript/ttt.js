@@ -104,30 +104,30 @@ TTTController.gameWon = function(gameState) {
 	    eight = gameState[8];
 	    nine  = gameState[9];
 	return (( one   == two   && one   == three && one   != 0 ) ||
-		    ( four  == five  && four  == six   && four  != 0 ) ||
-		    ( seven == eight && seven == nine  && seven != 0 ) ||
-		    ( one   == four  && one   == seven && one   != 0 ) ||
-		    ( two   == five  && two   == eight && two   != 0 ) ||
-		    ( three == six   && three == nine  && three != 0 ) ||
-		    ( one   == five  && one   == nine  && one   != 0 ) ||
-		    ( three == five  && three == seven && three != 0 ));
+		      ( four  == five  && four  == six   && four  != 0 ) ||
+	 	      ( seven == eight && seven == nine  && seven != 0 ) ||
+		      ( one   == four  && one   == seven && one   != 0 ) ||
+		      ( two   == five  && two   == eight && two   != 0 ) ||
+		      ( three == six   && three == nine  && three != 0 ) ||
+		      ( one   == five  && one   == nine  && one   != 0 ) ||
+		      ( three == five  && three == seven && three != 0 ));
 }
 
 TTTController.makeChannelQuery = function(playersObj) {
 	return "SELECT * \n"          + 
-		   "FROM TTTRECORDS \n"   + 
-		   "WHERE CHANNELID = " + "'" + playersObj.channelID + "' \n" +
-		   "AND   TEAMID    = " + "'" + playersObj.teamID + "';";
+		     "FROM  TTTRECORDS \n"   + 
+		     "WHERE CHANNELID = " + "'" + playersObj.channelID + "' \n" +
+		     "AND   TEAMID    = " + "'" + playersObj.teamID + "';";
 }
 
 TTTController.makeUpdateQuery = function(gameState, winner, gameRunning, playersObj, updateP2) {
-	return "UPDATE TTTRECORDS \n"   +
-	       "SET   GAMESTATE   = " +       gameState            + ", \n" + 
-	       "      WINNER      = " + "'" + winner               + "',\n" +
-	       "      GAMERUNNING = " + "'" + gameRunning          + "' \n" +
-(updateP2 ?",     PLAYER2     = " + "'" + playersObj.player2   + "' \n" : "") +
-	       "WHERE CHANNELID   = " + "'" + playersObj.channelID + "' \n" + 
-	       "AND   TEAMID      = " + "'" + playersObj.teamID    + "';";
+	return "UPDATE TTTRECORDS \n"  +
+	       "SET    GAMESTATE   = " +       gameState            + ", \n" + 
+	       "       WINNER      = " + "'" + winner               + "',\n" +
+	       "       GAMERUNNING = " + "'" + gameRunning          + "' \n" +
+(updateP2 ?",    PLAYER2     = " + "'" + playersObj.player2   + "' \n" : "") +
+	       "WHERE  CHANNELID   = " + "'" + playersObj.channelID + "' \n" + 
+	       "AND   T EAMID      = " + "'" + playersObj.teamID    + "';";
 }
 
 TTTController.makeInsertQuery = function(playersObj) {
