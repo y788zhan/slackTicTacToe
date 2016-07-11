@@ -92,6 +92,7 @@ app.post('/start', function(req, res) {
 			delayedRes.text = req.body.user_name + " has accepted the challenged";
 		} else {
 			console.log("index error");
+			console.log(result.message);
 			delayedRes.text = result.message;
 		}
 	});
