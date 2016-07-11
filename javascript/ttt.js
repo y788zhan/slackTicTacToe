@@ -381,8 +381,8 @@ TTTController.getGame = function(db, playersObj, callback) {
 
         } else {
 
-            var board = self.decimalToTernary(row.gameState);
-            qresult.gameState = board;
+            var board = self.decimalToTernary(row.gamestate);
+            qresult.gamestate = board;
             qresult.player1 = row.player1;
             qresult.player2 = row.player2;
         }
@@ -412,6 +412,7 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 
     if (self.possibleMoves.indexOf(move) === -1) {
       qresult.message = "ERROR: invalid move";
+      callback(qresult);
       return;
     }
 
