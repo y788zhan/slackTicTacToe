@@ -65,8 +65,9 @@ function validateRequest(db, req, res, resolve, reject) {
 			if (row.token === req.body.token) {
 				resolve(req, res);
 			} else {
-				console.log("500 error");
-				reject(res);
+				res.status(500).json({
+					"message": "error";
+				})
 			}
 		});
 }
