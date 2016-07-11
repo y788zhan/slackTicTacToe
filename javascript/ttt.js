@@ -118,11 +118,12 @@ TTTController.makeChannelQuery = function(playersObj) {
 		   "AND   TEAMID    = " + "'" + playersObj.teamID + "';";
 }
 
-TTTController.makeUpdateQuery = function(gameState, winner, gameRunning, playersObj) {
+TTTController.makeUpdateQuery = function(gameState, winner, gameRunning, playersObj, updatePlayer2) {
 	return "UPDATE TTTRECORDS \n"   +
 	       "SET   GAMESTATE   = " + gameState + ",\n" + 
 	       "      WINNER      = " + "'" + winner + "',\n" +
 	       "      GAMERUNNING = " + "'" + gameRunning + "' \n" +
+(updatePlayer2 ? "PLAYER2     = " + "'" + playersObj.player2 + "' \n" : "") +
 	       "WHERE CHANNELID   = " + "'" + playersObj.channelID + "' \n" + 
 	       "AND   TEAMID      = " + "'" + playersObj.teamID + "';";
 }
@@ -185,7 +186,7 @@ TTTController.createChallenge = function(db, playersObj, callback) {
 			
 			} else {
 
-				db.query(self.makeUpdateQuery(0, "", "CHALLENGED", playersObj))
+				db.query(self.makeUpdateQuery(0, "", "CHALLENGED", playersObj, true))
 					.on('end', function(result) {
 						callback(qresult);
 					});
@@ -230,7 +231,7 @@ TTTController.acceptChallenge = function(db, playersObj, callback) {
 			} else {
 				console.log(row.player2, playersObj.player1);
 				if (row.player2 == playersObj.player1) {
-					db.query(self.makeUpdateQuery(0, "", "YES", playersObj))
+					db.query(self.makeUpdateQuery(0, "", "YES", playersObj, false))
 						.on('end', function(result) {
 							callback(qresult);
 						})
@@ -276,7 +277,7 @@ TTTController.rejectChallenge = function(db, playersObj, callback) {
 			} else {
 				
 				if (row.player2 == playersObj.player1) {
-					db.query(self.makeUpdateQuery(0, "", "NO", playersObj))
+					db.query(self.makeUpdateQuery(0, "", "NO", playersObj, false))
 						.on('end', function(result) {
 							callback(qresult);
 						});
@@ -314,7 +315,7 @@ TTTController.quitGame = function(db, playersObj, callback) {
 		
 			self.matchPlayers(db, playersObj, function() {
 
-				db.query(self.makeUpdateQuery(0, "", "NO", playersObj))
+				db.query(self.makeUpdateQuery(0, "", "NO", playersObj, false))
 					.on('end', function(result) {
 						callback(qresult);
 					});
@@ -400,7 +401,8 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 								newState, 
 								(prevState[0] === "0" ? playersObj.player1 : playersObj.player2), // this is the modifiedPrevState
 								"NO", 
-								playersObj
+								playersObj,
+								false
 							)
 						);
 						
@@ -415,7 +417,7 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 
 						db.query(
 							self.makeUpdateQuery(
-								newState, "", "YES", playersObj
+								newState, "", "YES", playersObj, false
 							)
 						);
 
