@@ -60,16 +60,18 @@ function validateRequest(db, req, res, resolve, reject) {
 
 	// tokens are stored directly in db
 	// TODO (salted) hash tokens
-	db.query("SELECT * FROM SLACKTOKENS WHERE COMMAND = '" + req.body.command + "';")
-		.on('row', function(row) {
-			if (row.token === req.body.token) {
-				resolve(req, res);
-			} else {
-				res.status(500).json({
-					"message": "error"
-				})
-			}
-		});
+	var query = db.query("SELECT * FROM SLACKTOKENS WHERE COMMAND = '" + req.body.command + "';");
+	query.on('row', function(row) {
+		if (row.token === req.body.token) {
+			resolve(req, res);
+		} else {
+			reject(res);
+		}
+	});
+
+	query.on('end', function(result) {
+		if (result.rowCount === 0) reject(res);
+	});
 }
 
 // responds with instructions of how to use custom slash commands
