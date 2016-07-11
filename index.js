@@ -87,9 +87,15 @@ app.post('/start', function(req, res) {
 
 	TTTController.acceptChallenge(db, po, function(result) {
 		if (result.message === "success") {
-			delayedRes = JSON.parse(JSON.stringify(TTTBoard.makeBoard("0000000000", result.player1, result.player2))); // deep copy
+
+			delayedRes = JSON.parse(
+				JSON.stringify(
+					TTTBoard.makeBoard("0000000000", result.player1, result.player2)
+				)
+			); // deep copy
 			delayedRes.response_type = "in_channel";
 			delayedRes.text = req.body.user_name + " has accepted the challenged";
+		
 		} else {
 			delayedRes.text = result.message + "\nType /tttusage for help";
 		}
@@ -150,7 +156,11 @@ app.post('/move', function(req, res) {
 	TTTController.playerMove(db, po, req.body.text, function(result) {
 		if (result.message === "success") {
 			
-			delayedRes = JSON.parse(JSON.stringify(TTTBoard.makeBoard(result.gameState, result.player1, result.player2))); // deep copy
+			delayedRes = JSON.parse(
+				JSON.stringify(
+					TTTBoard.makeBoard(result.gameState, result.player1, result.player2)
+				)
+			); // deep copy
 			if (result.gameWon) {
 
 				delayedRes.text = result.winner + " HAS WON";
@@ -176,8 +186,14 @@ app.post('/gamestate', function(req, res) {
 	TTTController.getGame(db, po, function(result) {
 
 		if (result.message === "success") {
-			delayedRes = JSON.parse(JSON.stringify(TTTBoard.makeBoard(result.gameState, result.player1, result.player2))); // deep copy
+			
+			delayedRes = JSON.parse(
+				JSON.stringify(
+					TTTBoard.makeBoard(result.gameState, result.player1, result.player2)
+				)
+			); // deep copy
 			delayedRes.response_type = "ephemeral"; // do not display to everyone
+		
 		} else {
 			delayedRes.text = result.message + "\nType /tttusage for help";
 		}
