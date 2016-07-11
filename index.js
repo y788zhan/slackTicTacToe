@@ -78,8 +78,11 @@ function isFromSlack(req, res, next) {
 // responds with instructions of how to use custom slash commands
 app.post('/usage', function(req, res) {
 
+    res.status(200).json({
+      "text": "redirected"
+    });
     //res.status(200).json({
-     delayedRes = {"text": "/tttchallenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
+    delayedRes = {"text": "/tttchallenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
                 "/tttaccept : accepts the tic-tac-toe challenge\n" +
                 "/tttreject : rejects the tic-tac-toe challenge\n" +
                 "/tttquit : Quits current game\n" +
@@ -94,9 +97,6 @@ app.post('/usage', function(req, res) {
 app.post('/ttt', function(req, res) {
   
   res.redirect('/usage');
-  res.status(200).json({
-    "text": "Loading ..."
-  });
   
 });
 
