@@ -34,7 +34,7 @@ TTTBoard.board = {
     "text": "Current board: ",
     "attachments": [
         {
-            "text": "" // gives turn information
+            "text": "", // gives turn information
             "callback_id": "_",
             "color": "#3AA3E3",
             "attachment_type": "default",
