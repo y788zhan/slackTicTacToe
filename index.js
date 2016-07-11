@@ -45,7 +45,7 @@ function validationResponseSlack(res) {
 	});
 }
 
-
+// responds with instructions of how to use custom slash commands
 app.post('/usage', function(req, res) {
 	res.status(200).json({
 	    "text": "/tttchallenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
@@ -57,7 +57,7 @@ app.post('/usage', function(req, res) {
 	});
 });
 
-
+// challenges a user to a game
 app.post('/challenge', function(req, res) {
 	validationResponseSlack(res);
 	
@@ -78,6 +78,7 @@ app.post('/challenge', function(req, res) {
 
 });
 
+// accepts a challenge
 app.post('/start', function(req, res) {
 	validationResponseSlack(res);
 
@@ -86,7 +87,7 @@ app.post('/start', function(req, res) {
 
 	TTTController.acceptChallenge(db, po, function(result) {
 		if (result.message === "success") {
-			delayedRes = TTTBoard.makeBoard("0000000000");
+			delayedRes = JSON.parse(JSON.stringify(TTTBoard.makeBoard("0000000000"))); // deep copy
 			delayedRes.response_type = "in_channel";
 			delayedRes.text = req.body.user_name + " has accepted the challenged";
 		} else {
@@ -98,6 +99,7 @@ app.post('/start', function(req, res) {
 
 });
 
+// rejects a challenge
 app.post('/reject', function(req, res) {
 	validationResponseSlack(res);
 
@@ -118,7 +120,7 @@ app.post('/reject', function(req, res) {
 
 });
 
-
+// quits a game
 app.post('/quit', function(req, res) {
 	validationResponseSlack(res);
 
@@ -138,7 +140,7 @@ app.post('/quit', function(req, res) {
 	});
 });
 
-
+// performs a move on one of the cells
 app.post('/move', function(req, res) {
 	validationResponseSlack(res);
 
@@ -148,7 +150,7 @@ app.post('/move', function(req, res) {
 	TTTController.playerMove(db, po, req.body.text, function(result) {
 		if (result.message === "success") {
 			
-			delayedRes = TTTBoard.makeBoard(result.gameState);
+			delayedRes = JSON.parse(JSON.stringify(TTTBoard.makeBoard(result.gameState))); // deep copy
 			if (result.gameWon) {
 
 				delayedRes.text = result.winner + " HAS WON";
@@ -174,7 +176,8 @@ app.post('/gamestate', function(req, res) {
 	TTTController.getGame(db, po, function(result) {
 
 		if (result.message === "success") {
-			delayedRes = TTTBoard.makeBoard(result.gameState);
+			delayedRes = JSON.parse(JSON.stringify(TTTBoard.makeBoard(result.gameState)));
+			delayedRes.response_type = "ephemeral"; // do not display to everyone
 		} else {
 			delayedRes.text = result.message + "\nType /tttusage for help";
 		}

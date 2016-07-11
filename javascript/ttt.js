@@ -233,6 +233,8 @@ TTTController.acceptChallenge = function(db, playersObj, callback) {
 
 					db.query(self.makeUpdateQuery(0, "", "YES", playersObj, false))
 						.on('end', function(result) {
+							qresult.player1 = row.player1;
+							qresult.player2 = row.player2;
 							callback(qresult);
 						});
 						
@@ -353,7 +355,10 @@ TTTController.getGame = function(db, playersObj, callback) {
 		
 		} else {
 
-			qresult.gameState = self.decimalToTernary(row.gamestate);
+			var board = self.decimalToTernary(row.gameState);
+			qresult.gameState = board;
+			qresult.player1 = row.player1;
+			qresult.player2 = row.player2;
 			callback(qresult);
 		
 		}
@@ -417,7 +422,7 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 						
 						qresult.gameWon = true;
 						qresult.gameState = prevState; // this is the modified prevState
-						qresult.winner = prevState[0] === "0" ? playersObj.player1 : playersObj.player2;
+						qresult.winner = prevState[0] === "0" ? row.player1 : row.player2;
 
 					} else {
 						// switch turns
@@ -434,6 +439,9 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 						qresult.gameState = prevState; // this is the modified prevState
 
 					}
+
+					qresult.player1 = row.player1;
+					qresult.player2 = row.player2;
 
 					callback(qresult);
 

@@ -30,10 +30,12 @@ playersObj schema:
 */
 
 TTTBoard.board = {
+    "response_type": "in_channel",
     "text": "Current board: ",
     "attachments": [
         {
-            "text": "Make a move",
+            "text": "" // gives turn information
+        }, {
             "callback_id": "_",
             "color": "#3AA3E3",
             "attachment_type": "default",
@@ -116,24 +118,30 @@ TTTBoard.cellMap = {
     "0": "__",
     "1": "O",
     "2": "X"
-}
+};
 
 // game state is a ternary string
-TTTBoard.makeBoard = function(gameState) {
+TTTBoard.makeBoard = function(gameState, player1, player2) {
     var self = this;
 
     gameState = String(gameState);
 
     var arr = gameState.split("").slice(1, 10);
-    var attach1 = self.board.attachments[0];
-    var attach2 = self.board.attachments[1];
-    var attach3 = self.board.attachments[2];
+    var attach1 = self.board.attachments[1];
+    var attach2 = self.board.attachments[2];
+    var attach3 = self.board.attachments[3];
 
     for (var i = 0; i < 3; i++) {
         attach1.actions[i].text = self.cellMap[arr[i]];
         attach2.actions[i].text = self.cellMap[arr[i + 3]];
         attach3.actions[i].text = self.cellMap[arr[i + 6]];
     }
+
+    var line1 = "It's currently " + (gameState[0] === "0" ? player1 : player2) + "'s turn\n";
+    var line2 = player1 + ": O\n";
+    var line3 = player2 + ": X";
+
+    self.board.attachments[0] = line1 + line2 + line3;
 
     return self.board;
 
