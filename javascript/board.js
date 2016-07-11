@@ -30,122 +30,107 @@ playersObj schema:
 */
 
 TTTBoard.board = {
-  "response_type": "in_channel",
-  "text": "Current board: ",
-  "attachments": [
-    {
-      "text": "", // gives turn information
-      "callback_id": "_",
-      "color": "#3AA3E3",
-      "attachment_type": "default",
-      "actions": [
-          {
-              "name": "1",
-              "text": "__",
-              "type": "button",
-              "value": "1"
-          },
-          {
-              "name": "2",
-              "text": "__",
-              "type": "button",
-              "value": "2"
-          },
-          {
-              "name": "3",
-              "text": "__",
-              "type": "button",
-              "value": "3"
-          }
-      ]
+    "response_type": "in_channel",
+    "text": "Current board: ",
+    "attachments": [{
+        "text": "", // gives turn information
+        "callback_id": "_",
+        "color": "#3AA3E3",
+        "attachment_type": "default",
+        "actions": [{
+            "name": "1",
+            "text": "__",
+            "type": "button",
+            "value": "1"
+        }, {
+            "name": "2",
+            "text": "__",
+            "type": "button",
+            "value": "2"
+        }, {
+            "name": "3",
+            "text": "__",
+            "type": "button",
+            "value": "3"
+        }]
     }, {
-      "text": "",
-      "callback_id": "_",
-      "color": "#3AA3E3",
-      "attachment_type": "default",
-      "actions": [
-          {
-              "name": "4",
-              "text": "__",
-              "type": "button",
-              "value": "4"
-          },
-          {
-              "name": "5",
-              "text": "__",
-              "type": "button",
-              "value": "5"
-          },
-          {
-              "name": "6",
-              "text": "__",
-              "type": "button",
-              "value": "6"
-          }
-      ]
+        "text": "",
+        "callback_id": "_",
+        "color": "#3AA3E3",
+        "attachment_type": "default",
+        "actions": [{
+            "name": "4",
+            "text": "__",
+            "type": "button",
+            "value": "4"
+        }, {
+            "name": "5",
+            "text": "__",
+            "type": "button",
+            "value": "5"
+        }, {
+            "name": "6",
+            "text": "__",
+            "type": "button",
+            "value": "6"
+        }]
     }, {
-      "text": "",
-      "callback_id": "_",
-      "color": "#3AA3E3",
-      "attachment_type": "default",
-      "actions": [
-          {
-              "name": "7",
-              "text": "__",
-              "type": "button",
-              "value": "7"
-          },
-          {
-              "name": "8",
-              "text": "__",
-              "type": "button",
-              "value": "8"
-          },
-          {
-              "name": "9",
-              "text": "__",
-              "type": "button",
-              "value": "9"
-          }
-      ]
-    }
-  ]
+        "text": "",
+        "callback_id": "_",
+        "color": "#3AA3E3",
+        "attachment_type": "default",
+        "actions": [{
+            "name": "7",
+            "text": "__",
+            "type": "button",
+            "value": "7"
+        }, {
+            "name": "8",
+            "text": "__",
+            "type": "button",
+            "value": "8"
+        }, {
+            "name": "9",
+            "text": "__",
+            "type": "button",
+            "value": "9"
+        }]
+    }]
 };
 
 
 TTTBoard.cellMap = {
-  "0": "__",
-  "1": "O",
-  "2": "X"
+    "0": "__",
+    "1": "O",
+    "2": "X"
 };
 
 // game state is a ternary string
 TTTBoard.makeBoard = function(gameState, player1, player2) {
-  var self = this;
+    var self = this;
 
-  gameState = String(gameState);
+    gameState = String(gameState);
 
-  var arr = gameState.split("").slice(1, 10);
-  var attach1 = self.board.attachments[0];
-  var attach2 = self.board.attachments[1];
-  var attach3 = self.board.attachments[2];
+    var arr = gameState.split("").slice(1, 10);
+    var attach1 = self.board.attachments[0];
+    var attach2 = self.board.attachments[1];
+    var attach3 = self.board.attachments[2];
 
-  for (var i = 0; i < 3; i++) {
-    attach1.actions[i].text = self.cellMap[arr[i]];
-    attach2.actions[i].text = self.cellMap[arr[i + 3]];
-    attach3.actions[i].text = self.cellMap[arr[i + 6]];
-  }
+    for (var i = 0; i < 3; i++) {
+        attach1.actions[i].text = self.cellMap[arr[i]];
+        attach2.actions[i].text = self.cellMap[arr[i + 3]];
+        attach3.actions[i].text = self.cellMap[arr[i + 6]];
+    }
 
-  var line1 = "It's currently " + (gameState[0] === "0" ? player1 : player2) + "'s turn\n";
-  var line2 = player1 + ": O\n";
-  var line3 = player2 + ": X";
+    var line1 = "It's currently " + (gameState[0] === "0" ? player1 : player2) + "'s turn\n";
+    var line2 = player1 + ": O\n";
+    var line3 = player2 + ": X";
 
-  attach1.text = line1 + line2 + line3;
+    attach1.text = line1 + line2 + line3;
 
-  return self.board;
+    return self.board;
 
 }
 
 
 module.exports = TTTBoard;
-
