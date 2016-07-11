@@ -1,10 +1,10 @@
-var express = require('express');
-var pg = require('pg');
-var bodyParser = require('body-parser');
-var request = require('request');
+var express       = require('express');
+var pg            = require('pg');
+var bodyParser    = require('body-parser');
+var request       = require('request');
 var TTTController = require('./javascript/ttt');
-var TTTBoard = require('./javascript/board');
-var app = express();
+var TTTBoard      = require('./javascript/board');
+var app           = express();
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -13,10 +13,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false
 }));
-
-// views is directory for all template files
-//app.set('views', __dirname + '/views');
-//app.set('view engine', 'ejs');
 
 // postgres connection
 var db;
@@ -76,21 +72,38 @@ function validateRequest(db, req, res, resolve, reject) {
     });
 }
 
+function isAuthenticated(req, res, next) {
+  var query = db.query("SELECT * FROM SLACKTOKENS WHERE COMMAND = '" + req.body.comamnd + "';");
+  query.on('row', function(row) {
+    if (row.token === req.body.token) {
+      return next();
+    } else {
+      errHandler(res);
+    }
+  });
+
+  query.on('end', function(result) {
+    if (result.rowCount === 0) errHandler(res);
+  });
+}
+
+app.use('/', isAuthenticated);
+
 // responds with instructions of how to use custom slash commands
 app.post('/usage', function(req, res) {
 
-    validateRequest(db, req, res, function(req, res) {
+    //validateRequest(db, req, res, function(req, res) {
 
         res.status(200).json({
             "text": "/tttchallenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
-                "/tttaccept : accepts the tic-tac-toe challenge\n" +
-                "/tttreject : rejects the tic-tac-toe challenge\n" +
-                "/tttquit : Quits current game\n" +
-                "/tttboard : Displays the currently board of the game\n" +
-                "/tttmove [1-9] : Makes your move on a cell"
+                    "/tttaccept                : accepts the tic-tac-toe challenge\n" +
+                    "/tttreject                : rejects the tic-tac-toe challenge\n" +
+                    "/tttquit                  : Quits current game\n" +
+                    "/tttboard                 : Displays the currently board of the game\n" +
+                    "/tttmove <[1-9]>          : Makes your move on a cell"
         });
 
-    }, errHandler);
+    //}, errHandler);
 
 });
 
@@ -221,6 +234,7 @@ app.post('/move', function(req, res) {
                         TTTBoard.makeBoard(result.gameState, result.player1, result.player2)
                     )
                 ); // deep copy
+
                 if (result.gameWon) {
 
                     delayedRes.text = result.winner + " HAS WON";
@@ -233,7 +247,6 @@ app.post('/move', function(req, res) {
             }
 
             postBackSlack(req, delayedRes);
-
         });
 
     }, errHandler);
@@ -258,6 +271,7 @@ app.post('/gamestate', function(req, res) {
                         TTTBoard.makeBoard(result.gameState, result.player1, result.player2)
                     )
                 ); // deep copy
+
                 delayedRes.response_type = "ephemeral"; // do not display to everyone
 
             } else {
@@ -265,7 +279,6 @@ app.post('/gamestate', function(req, res) {
             }
 
             postBackSlack(req, delayedRes);
-
         });
 
     }, errHandler);
