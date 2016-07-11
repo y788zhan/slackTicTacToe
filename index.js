@@ -97,6 +97,8 @@ app.post('/start', function(req, res) {
 		}
 	});
 
+	console.log(delayedRes);
+
 	postBackSlack(req, delayedRes);
 
 });
