@@ -86,10 +86,12 @@ app.post('/start', function(req, res) {
 
 	TTTController.acceptChallenge(db, po, function(result) {
 		if (result.message === "success") {
+			console.log("index success");
 			delayedRes = TTTBoard.makeBoard("0000000000");
 			delayedRes.response_type = "in_channel";
 			delayedRes.text = req.body.user_name + " has accepted the challenged";
 		} else {
+			console.log("index error");
 			delayedRes.text = result.message;
 		}
 	});
