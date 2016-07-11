@@ -73,15 +73,13 @@ function isFromSlack(req, res, next) {
 
 }
 
-//app.use('/', isFromSlack);
+app.use('/', isFromSlack);
 
-// responds with instructions of how to use custom slash commands
 
 app.post('/ttt', function(req, res) {
   
   var content = req.body.text.trim();
   var firstWord = content.substr(0, content.indexOf(" "));
-  console.log(content);
 
   if (firstWord === "challenge") {
     res.redirect(307, '/challenge');
@@ -94,7 +92,7 @@ app.post('/ttt', function(req, res) {
       res.redirect(307, '/usage');
       break;
     case "accept" :
-      res.redirect(307, '/accept');
+      res.redirect(307, '/start');
       break;
     case "reject" :
       res.redirect(307, '/reject');
@@ -113,6 +111,7 @@ app.post('/ttt', function(req, res) {
   
 });
 
+// responds with instructions of how to use custom slash commands
 app.post('/usage', function(req, res) {
 
     quickResponseSlack(res);
