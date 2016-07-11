@@ -167,8 +167,6 @@ TTTController.createChallenge = function(db, playersObj, callback) {
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
 
-
-	console.log(playersObj.player2);
 	if (playersObj.player2 == undefined || playersObj.player2 === "") {
 		qresult.message = "ERROR: No user was challenged";
 		callback(qresult);
@@ -179,16 +177,14 @@ TTTController.createChallenge = function(db, playersObj, callback) {
 	
 	query.on('row', function(row) {
 		if (row) {
-			console.log("channel found");
 			// this channel has previously played a game
 			if (row.gamerunning === "YES") {
-				console.log('hi');
 				// a game is currently running
 				qresult.message = GAMEISRUNNING;
 				callback(qresult);
 			
 			} else {
-				console.log('hello');
+
 				db.query(self.makeUpdateQuery(0, "", "CHALLENGED", playersObj))
 					.on('end', function(result) {
 						callback(qresult);
@@ -218,21 +214,21 @@ TTTController.acceptChallenge = function(db, playersObj, callback) {
 	callback = callback || self.no_op;
 
 	var query = db.query(self.makeChannelQuery(playersObj));
-
+	console.log('hi');
 	query.on('row', function(row) {
 		if (row) {
 			if (row.gamerunning === "YES") {
-			
+			console.log('yes');
 				qresult.message = GAMEISRUNNING;
 				callback(qresult);
 			
 			} else if (row.gamerunning === "NO") {
-			
+			console.log('no');
 				qresult.message = NOCHALLENGE;
 				callback(qresult);
 			
 			} else {
-			
+			console.log('make');
 				if (row.player2 == playersObj.player1) {
 					db.query(self.makeUpdateQuery(0, "", "YES", playersObj))
 						.on('end', function(result) {
