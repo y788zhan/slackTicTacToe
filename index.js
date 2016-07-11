@@ -90,12 +90,15 @@ app.post('/usage', function(req, res) {
 });
 
 app.post('/test', function(req, res) {
+  res.status(200).json({
+    "message":"redirecting"
+  })
   res.redirect('/othertest');
 });
 
 app.post('/othertest', function(req, res) {
   res.status(200).json({
-    "message:": "redirected"
+    "message:": req.body.text
   });
 });
 
