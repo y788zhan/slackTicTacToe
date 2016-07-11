@@ -89,6 +89,16 @@ app.post('/usage', function(req, res) {
 
 });
 
+app.post('/test', function(req, res) {
+  res.redirect('/othertest');
+});
+
+app.post('/othertest', function(req, res) {
+  res.status(200).json({
+    "message:": "redirected"
+  });
+});
+
 // challenges a user to a game
 app.post('/challenge', function(req, res) {
 
