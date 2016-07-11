@@ -106,7 +106,7 @@ app.post('/ttt', function(req, res) {
     default:
       res.status(200).json({
         "text": "Invalid command. Type /ttt usage for help"
-      })
+      });
   }
   
 });
@@ -144,7 +144,7 @@ app.post('/challenge', function(req, res) {
             delayedRes.response_type = "in_channel";
             delayedRes.text = req.body.user_name + " has challenged " + req.body.text + " to a game of tic-tac-toe";
         } else {
-            delayedRes.text = result.message + "\nType /tttusage for help";
+            delayedRes.text = result.message + "\nType /ttt usage for help";
         }
 
         postBackSlack(req, delayedRes);
@@ -172,7 +172,7 @@ app.post('/start', function(req, res) {
             delayedRes.text = req.body.user_name + " has accepted the challenged";
 
         } else {
-            delayedRes.text = result.message + "\nType /tttusage for help";
+            delayedRes.text = result.message + "\nType /ttt usage for help";
         }
 
         postBackSlack(req, delayedRes);
@@ -193,7 +193,7 @@ app.post('/reject', function(req, res) {
             delayedRes.response_type = "in_channel";
             delayedRes.text = req.body.user_name + " has declined the challenge";
         } else {
-            delayedRes.text = result.message + "\nType /tttusage for help";
+            delayedRes.text = result.message + "\nType /ttt usage for help";
         }
 
         postBackSlack(req, delayedRes);
@@ -215,7 +215,7 @@ app.post('/quit', function(req, res) {
             delayedRes.response_type = "in_channel";
             delayedRes.text = "Game quit";
         } else {
-            delayedRes.text = result.message + "\nType /tttusage for help";
+            delayedRes.text = result.message + "\nType /ttt usage for help";
         }
 
         postBackSlack(req, delayedRes);
@@ -243,12 +243,17 @@ app.post('/move', function(req, res) {
             if (result.gameWon) {
 
                 delayedRes.text = result.winner + " HAS WON";
-                delayedRes.attachments[0].text = "Game ended";
+
+            } else if (result.gameEnd) {
+
+                delayedRes.text = "THE GAME HAS ENDED IN A TIE";
 
             }
 
+            delayedRes.attachments[0].text = "Game ended";
+
         } else {
-            delayedRes.text = result.message + "\nType /tttusage for help";
+            delayedRes.text = result.message + "\nType /ttt usage for help";
         }
 
         postBackSlack(req, delayedRes);
@@ -276,7 +281,7 @@ app.post('/gamestate', function(req, res) {
             delayedRes.response_type = "ephemeral"; // do not display to everyone
 
         } else {
-            delayedRes.text = result.message + "\nType /tttusage for help";
+            delayedRes.text = result.message + "\nType /ttt usage for help";
         }
 
         postBackSlack(req, delayedRes);

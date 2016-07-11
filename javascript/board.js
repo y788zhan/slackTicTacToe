@@ -100,9 +100,18 @@ TTTBoard.board = {
 
 
 TTTBoard.cellMap = {
-    "0": "__",
-    "1": "O",
-    "2": "X"
+    "0": {
+      "val": "__",
+      "style": "good"
+    }
+    "1": {
+      "val": "O",
+      "style": "primary"
+    },
+    "2": {
+      "val": "X",
+      "style": "danger"
+    }
 };
 
 // game state is a ternary string
@@ -117,9 +126,12 @@ TTTBoard.makeBoard = function(gameState, player1, player2) {
     var attach3 = self.board.attachments[2];
 
     for (var i = 0; i < 3; i++) {
-        attach1.actions[i].text = self.cellMap[arr[i]];
-        attach2.actions[i].text = self.cellMap[arr[i + 3]];
-        attach3.actions[i].text = self.cellMap[arr[i + 6]];
+        attach1.actions[i].text  = self.cellMap[arr[i]].val;
+        attach1.actions[i].style = self.cellMap[arr[i]].style;
+        attach2.actions[i].text  = self.cellMap[arr[i + 3]].val;
+        attach2.actions[i].style = self.cellMap[arr[i + 3]].style;
+        attach3.actions[i].text  = self.cellMap[arr[i + 6]].val;
+        attach3.actions[i].style = self.cellMap[arr[i + 6]].style;
     }
 
     var line1 = "It's currently " + (gameState[0] === "0" ? player1 : player2) + "'s turn\n";

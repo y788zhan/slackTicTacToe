@@ -96,15 +96,15 @@ TTTController.decimalToTernary = function(decimal) {
 
 // receives a ternary string
 TTTController.gameWon = function(gameState) {
-    var one = gameState[1];
-    two = gameState[2];
-    three = gameState[3];
-    four = gameState[4];
-    five = gameState[5];
-    six = gameState[6];
-    seven = gameState[7];
-    eight = gameState[8];
-    nine = gameState[9];
+    var one   = gameState[1];
+        two   = gameState[2];
+        three = gameState[3];
+        four  = gameState[4];
+        five  = gameState[5];
+        six   = gameState[6];
+        seven = gameState[7];
+        eight = gameState[8];
+        nine  = gameState[9];
     return (( one   == two   && one   == three && one   != 0 ) ||
             ( four  == five  && four  == six   && four  != 0 ) ||
             ( seven == eight && seven == nine  && seven != 0 ) ||
@@ -113,6 +113,21 @@ TTTController.gameWon = function(gameState) {
             ( three == six   && three == nine  && three != 0 ) ||
             ( one   == five  && one   == nine  && one   != 0 ) ||
             ( three == five  && three == seven && three != 0 ));
+}
+
+TTTController.gameTied = function(gameState) {
+    var one   = gameState[1];
+        two   = gameState[2];
+        three = gameState[3];
+        four  = gameState[4];
+        five  = gameState[5];
+        six   = gameState[6];
+        seven = gameState[7];
+        eight = gameState[8];
+        nine  = gameState[9];
+    return ( one   != 0 && two   != 0 && three != 0 &&
+             four  != 0 && five  != 0 && six   != 0 &&
+             seven != 0 && eight != 0 && nine  != 0 );
 }
 
 TTTController.makeChannelQuery = function(playersObj) {
@@ -363,7 +378,6 @@ TTTController.getGame = function(db, playersObj, callback) {
         if (row.gamerunning == "NO" || row.gamerunning == "CHALLENGED") {
 
             qresult.message = GAMENOTRUNNING;
-            callback(qresult);
 
         } else {
 
@@ -371,9 +385,9 @@ TTTController.getGame = function(db, playersObj, callback) {
             qresult.gameState = board;
             qresult.player1 = row.player1;
             qresult.player2 = row.player2;
-            callback(qresult);
-
         }
+
+        callback(qresult);
     });
 
     query.on('end', function(result) {
@@ -445,18 +459,26 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
                         qresult.gameState = prevState; // this is the modified prevState
                         qresult.winner = prevState[0] === "0" ? row.player1 : row.player2;
 
+                    } else if (self.gameTied(prevState)) {
+
+                      // game tied, game no longer running, no winner produced
+                      newState = self.ternaryToDecimal(prevState);
+
+                      db.query(self.makeUpdateQuery(newState, "", "NO", playersObj, false));
+
+                      qresult.gameWon = false;
+                      qresult.gameEnd = true;
+                      qresult.gameState = prevState;
+
                     } else {
                         // switch turns
                         prevState = prevState.replaceAt(0, prevState[0] === "0" ? "1" : "0");
                         newState = self.ternaryToDecimal(prevState);
 
-                        db.query(
-                            self.makeUpdateQuery(
-                                newState, "", "YES", playersObj, false
-                            )
-                        );
+                        db.query(self.makeUpdateQuery(newState, "", "YES", playersObj, false);
 
                         qresult.gameWon = false;
+                        qresult.gameEnd = false;
                         qresult.gameState = prevState; // this is the modified prevState
 
                     }
@@ -464,13 +486,12 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
                     qresult.player1 = row.player1;
                     qresult.player2 = row.player2;
 
-                    callback(qresult);
-
                 } else {
                     // the cell was already filled
                     qresult.message = "ERROR: invalid move";
-                    callback(qresult);
                 }
+
+                callback(qresult);
 
             }, function() {
 
