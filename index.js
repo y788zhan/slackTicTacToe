@@ -66,7 +66,7 @@ function validateRequest(db, req, res, resolve, reject) {
 				resolve(req, res);
 			} else {
 				res.status(500).json({
-					"message": "error";
+					"message": "error"
 				})
 			}
 		});
