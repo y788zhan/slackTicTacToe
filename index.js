@@ -92,10 +92,12 @@ app.post('/usage', function(req, res) {
 });
 
 app.post('/ttt', function(req, res) {
+  
+  res.redirect('/usage');
   res.status(200).json({
     "text": "Loading ..."
   });
-  res.redirect('/usage');
+  
 });
 
 
