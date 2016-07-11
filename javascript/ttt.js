@@ -118,12 +118,12 @@ TTTController.makeChannelQuery = function(playersObj) {
 		   "AND   TEAMID    = " + "'" + playersObj.teamID + "';";
 }
 
-TTTController.makeUpdateQuery = function(gameState, winner, gameRunning, playersObj, updatePlayer2) {
+TTTController.makeUpdateQuery = function(gameState, winner, gameRunning, playersObj, updateP2) {
 	return "UPDATE TTTRECORDS \n"   +
 	       "SET   GAMESTATE   = " +       gameState            + ", \n" + 
 	       "      WINNER      = " + "'" + winner               + "',\n" +
-	       "      GAMERUNNING = " + "'" + gameRunning          + "',\n" +
-(updatePlayer2 ? "PLAYER2     = " + "'" + playersObj.player2   + "' \n" : "") +
+	       "      GAMERUNNING = " + "'" + gameRunning          + "' \n" +
+(updateP2 ?",     PLAYER2     = " + "'" + playersObj.player2   + "' \n" : "") +
 	       "WHERE CHANNELID   = " + "'" + playersObj.channelID + "' \n" + 
 	       "AND   TEAMID      = " + "'" + playersObj.teamID    + "';";
 }
