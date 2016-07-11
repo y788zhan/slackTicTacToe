@@ -60,7 +60,7 @@ function validateRequest(db, req, res, resolve, reject) {
 
 	// tokens are stored directly in db
 	// TODO (salted) hash tokens
-	db.query("SELECT * FROM SLACKTOKENS WHERE COMMAND = '" + req.body.command + "'";)
+	db.query("SELECT * FROM SLACKTOKENS WHERE COMMAND = '" + req.body.command + "';")
 		.on('row', function(row) {
 			if (row.token === req.body.token) {
 				resolve(req, res);
