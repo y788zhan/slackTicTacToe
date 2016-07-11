@@ -162,10 +162,13 @@ TTTController.matchPlayers = function(db, playersObj, resolve, reject) {
 
 // callbacks have a result parameter
 TTTController.createChallenge = function(db, playersObj, callback) {
+	console.log('create challenge');
 	var self = this;
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
 
+
+	console.log(playersObj.player2);
 	if (playersObj.player2 == undefined) {
 		qresult.message = "ERROR: No user was challenged";
 		callback(qresult);

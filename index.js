@@ -21,8 +21,6 @@ var db;
 pg.defaults.ssl = true;
 pg.connect(process.env.DATABASE_URL, function(err, client) {
   if (err) throw err;
-  console.log('Connected to postgres! Getting schemas...');
-
   db = client;
 });
 
@@ -50,12 +48,12 @@ function validationResponseSlack(res) {
 
 app.post('/usage', function(req, res) {
 	res.status(200).json({
-	    "text": "\\tttchallenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
-	    		"\\tttaccept : accepts the tic-tac-toe challenge\n" +
-	    		"\\tttreject : rejects the tic-tac-toe challenge\n" +
-	    		"\\tttquit : Quits current game\n" +
-	    		"\\tttboard : Displays the currently board of the game\n" +
-	    		"\\tttmove [1-9] : Makes your move on a cell"
+	    "text": "/tttchallenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
+	    		"/tttaccept : accepts the tic-tac-toe challenge\n" +
+	    		"/tttreject : rejects the tic-tac-toe challenge\n" +
+	    		"/tttquit : Quits current game\n" +
+	    		"/tttboard : Displays the currently board of the game\n" +
+	    		"/tttmove [1-9] : Makes your move on a cell"
 	});
 });
 
@@ -132,7 +130,7 @@ app.post('/quit', function(req, res) {
 			delayedRes.response_type = "in_channel";
 			delayedRes.text = "Game quit";
 		} else {
-			delayedRes.text = result.message + "\nType \\tttusage for help";
+			delayedRes.text = result.message + "\nType /tttusage for help";
 		}
 
 		postBackSlack(req, delayedRes);
@@ -158,7 +156,7 @@ app.post('/move', function(req, res) {
 			}
 
 		} else {
-			delayedRes.text = result.message + "\nType \\tttusage for help";
+			delayedRes.text = result.message + "\nType /tttusage for help";
 		}
 
 		postBackSlack(req, delayedRes);
@@ -177,7 +175,7 @@ app.post('/gamestate', function(req, res) {
 		if (result.message === "success") {
 			delayedRes = TTTBoard.makeBoard(result.gameState);
 		} else {
-			delayedRes.text = result.message + "\nType \\tttusage for help";
+			delayedRes.text = result.message + "\nType /tttusage for help";
 		}
 
 		postBackSlack(req, delayedRes);
