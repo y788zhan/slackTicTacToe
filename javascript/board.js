@@ -103,7 +103,7 @@ TTTBoard.cellMap = {
     "0": {
       "val": "__",
       "style": "good"
-    }
+    },
     "1": {
       "val": "O",
       "style": "primary"
