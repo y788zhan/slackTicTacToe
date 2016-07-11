@@ -163,7 +163,6 @@ TTTController.matchPlayers = function(db, playersObj, resolve, reject) {
 
 // callbacks have a result parameter
 TTTController.createChallenge = function(db, playersObj, callback) {
-	console.log('create challenge');
 	var self = this;
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
@@ -231,6 +230,7 @@ TTTController.acceptChallenge = function(db, playersObj, callback) {
 			} else {
 				console.log(row.player2, playersObj.player1);
 				if (row.player2 == playersObj.player1) {
+					console.log('eq');
 					db.query(self.makeUpdateQuery(0, "", "YES", playersObj, false))
 						.on('end', function(result) {
 							callback(qresult);
@@ -239,6 +239,7 @@ TTTController.acceptChallenge = function(db, playersObj, callback) {
 							console.log(result);
 						});
 				} else {
+					console.log('ne');
 					qresult.message = NOTCHALLENGED;
 					callback(qresult);
 				}
