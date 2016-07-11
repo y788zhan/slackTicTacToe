@@ -35,7 +35,6 @@ TTTBoard.board = {
     "attachments": [
         {
             "text": "" // gives turn information
-        }, {
             "callback_id": "_",
             "color": "#3AA3E3",
             "attachment_type": "default",
@@ -127,9 +126,9 @@ TTTBoard.makeBoard = function(gameState, player1, player2) {
     gameState = String(gameState);
 
     var arr = gameState.split("").slice(1, 10);
-    var attach1 = self.board.attachments[1];
-    var attach2 = self.board.attachments[2];
-    var attach3 = self.board.attachments[3];
+    var attach1 = self.board.attachments[0];
+    var attach2 = self.board.attachments[1];
+    var attach3 = self.board.attachments[2];
 
     for (var i = 0; i < 3; i++) {
         attach1.actions[i].text = self.cellMap[arr[i]];
@@ -141,7 +140,7 @@ TTTBoard.makeBoard = function(gameState, player1, player2) {
     var line2 = player1 + ": O\n";
     var line3 = player2 + ": X";
 
-    self.board.attachments[0] = line1 + line2 + line3;
+    attach1.text = line1 + line2 + line3;
 
     return self.board;
 
