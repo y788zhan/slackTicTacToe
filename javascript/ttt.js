@@ -3,6 +3,8 @@ var TTTController = {};
 var WRONGPLAYERSERROR = "ERROR: You're not one of the players of this game";
 var GAMEISRUNNING     = "ERROR: A game is currently running";
 var GAMENOTRUNNING    = "ERROR: There is no game running currently";
+var NOCHALLENGE       = "ERROR: There is no open challenge currently";
+var NOTCHALLENGED     = "ERROR: You are not the challenged player";
 
 /* game state is expressed as 10-bit ternary string, but stored as a decimal value
 left-most bit is the turn bit
@@ -99,14 +101,14 @@ TTTController.gameWon = function(gameState) {
 	    seven = gameState[7];
 	    eight = gameState[8];
 	    nine  = gameState[9];
-	return (( one   == two   && one   == three && one   != 0) ||
-		    ( four  == five  && four  == six   && four  != 0) ||
-		    ( seven == eight && seven == nine  && seven != 0) ||
-		    ( one   == four  && one   == seven && one   != 0) ||
-		    ( two   == five  && two   == eight && two   != 0) ||
-		    ( three == six   && three == nine  && three != 0) ||
-		    ( one   == five  && one   == nine  && one   != 0) ||
-		    ( three == five  && three == seven && three != 0));
+	return (( one   == two   && one   == three && one   != 0 ) ||
+		    ( four  == five  && four  == six   && four  != 0 ) ||
+		    ( seven == eight && seven == nine  && seven != 0 ) ||
+		    ( one   == four  && one   == seven && one   != 0 ) ||
+		    ( two   == five  && two   == eight && two   != 0 ) ||
+		    ( three == six   && three == nine  && three != 0 ) ||
+		    ( one   == five  && one   == nine  && one   != 0 ) ||
+		    ( three == five  && three == seven && three != 0 ));
 }
 
 TTTController.makeChannelQuery = function(playersObj) {
@@ -139,7 +141,7 @@ TTTController.makeInsertQuery = function(playersObj) {
 	       "        '" + playersObj.player2   + "',\n" +
 	       "        "  + 0                    + ",\n" +
 	       "        "  + "''"                 + ",\n" +
-	       "        '" + "YES');"                 
+	       "        '" + "CHALLENGED');"                 
 
 }
 
@@ -159,11 +161,16 @@ TTTController.matchPlayers = function(db, playersObj, resolve, reject) {
 }
 
 // callbacks have a result parameter
-TTTController.createNewGame = function(db, playersObj, callback) {
+TTTController.createChallenge = function(db, playersObj, callback) {
 	var self = this;
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
 
+	if (playersObj.player2 == undefined) {
+		qresult.message = "ERROR: No user was challenged";
+		callback(qresult);
+		return;
+	}
 
 	var query = db.query(self.makeChannelQuery(playersObj));
 	
@@ -179,7 +186,7 @@ TTTController.createNewGame = function(db, playersObj, callback) {
 			
 			} else {
 
-				db.query(self.makeUpdateQuery(0, "", "YES", playersObj))
+				db.query(self.makeUpdateQuery(0, "", "CHALLENGED", playersObj))
 					.on('end', function(result) {
 						callback(qresult);
 					});
@@ -202,21 +209,91 @@ TTTController.createNewGame = function(db, playersObj, callback) {
 
 }
 
-/*
-TTTController.restartGame = function(db, playersObj, callback) {
+TTTController.acceptChallenge = function(db, playersObj, callback) {
 	var self = this;
-	var result = {message: "success"};
+	var qresult = {message: "success"};
+	callback = callback || self.no_op;
 
-	try {
-		if (!self.matchPlayers(db, playersObj)) throw WRONGPLAYERSERROR;
-		db.query(self.makeUpdateQuery(0, "", "YES", playersObj));
-	} catch (errmsg) {
-		result.message = errmsg;
-	}
+	var query = db.query(self.makeChannelQuery(playersObj));
 
-	if (typeof callback === "function") callback(result);
+	query.on('row', function(row) {
+		if (row) {
+			if (row.gamerunning === "YES") {
+			
+				qresult.message = GAMEISRUNNING;
+				callback(qresult);
+			
+			} else if (row.gamerunning === "NO") {
+			
+				qresult.message = NOCHALLENGE;
+				callback(qresult);
+			
+			} else {
+			
+				if (row.player2 == playersObj.player1) {
+					db.query(self.makeUpdateQuery(0, "", "YES", playersObj))
+						.on('end', function(result) {
+							callback(qresult);
+						});
+				} else {
+					qresult.message = NOTCHALLENGED;
+					callback(qresult);
+				}
+				
+			}
+		}
+	});
+
+	query.on('end', function(result) {
+		if (result.rowCount === 0) {
+			qresult.message = NOCHALLENGE;
+			callback(qresult);
+		}
+	});
 }
-*/
+
+TTTController.rejectChallenge = function(db, playersObj, callback) {
+	var self = this;
+	var qresult = {message: "success"};
+	callback = callback || self.no_op;
+
+	var query = db.query(self.makeChannelQuery(playersObj));
+
+	query.on('row', function(row) {
+		if (row) {
+			if (row.gamerunning === "YES") {
+				
+				qresult.message = GAMEISRUNNING;
+				callback(qresult);
+			
+			} else if (row.gamerunning === "NO") {
+			
+				qresult.message = NOCHALLENGE;
+				callback(qresult);
+			
+			} else {
+				
+				if (row.player2 == playersObj.player1) {
+					db.query(self.makeUpdateQuery(0, "", "NO", playersObj))
+						.on('end', function(result) {
+							callback(qresult);
+						});
+				} else {
+					qresult.message = NOTCHALLENGED;
+					callback(qresult);
+				}
+			
+			}
+		}
+	});
+
+	query.on('end', function(result) {
+		if (result.rowCount === 0) {
+			qresult.message = NOCHALLENGE;
+			callback(qresult);
+		}
+	});
+}
 
 TTTController.quitGame = function(db, playersObj, callback) {
 	var self = this;
@@ -226,7 +303,7 @@ TTTController.quitGame = function(db, playersObj, callback) {
 	// check to see if game exists
 	var query = db.query(self.makeChannelQuery(playersObj));
 	query.on('row', function(row) {
-		if (row.gamerunning == "NO") {
+		if (row.gamerunning == "NO" || row.gamerunning == "CHALLENGED") {
 			// there is no game being played
 			qresult.message = GAMENOTRUNNING;
 			callback(qresult);
@@ -266,7 +343,7 @@ TTTController.getGame = function(db, playersObj, callback) {
 
 	var query = db.query(self.makeChannelQuery(playersObj));
 	query.on('row', function(row) {
-		if (row.gamerunning == "NO") {
+		if (row.gamerunning == "NO" || row.gamerunning == "CHALLENGED") {
 			
 			qresult.message = GAMENOTRUNNING;
 			callback(qresult);
@@ -290,15 +367,14 @@ TTTController.getGame = function(db, playersObj, callback) {
 
 // move is the cell number
 TTTController.playerMove = function(db, playersObj, move, callback) {
-	move = Number(move);
-
 	var self = this;
 	var qresult = {message: "success"};
 	callback = callback || self.no_op;
+	move = Number(move);
 
 	var query = db.query(self.makeChannelQuery(playersObj));
 	query.on('row', function(row) {
-		if (row.gamerunning == "NO") {
+		if (row.gamerunning == "NO" || row.gamerunning == "CHALLENGED") {
 			
 			qresult.message = GAMENOTRUNNING;
 			callback(qresult);
@@ -309,12 +385,9 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 
 				var prevState = self.decimalToTernary(row.gamestate);
 				var newState;
-				console.log("PREVSTATE: " + prevState + " " + (typeof prevState));
 
 				if (prevState[move] == 0) {
 					prevState = prevState.replaceAt(move, prevState[0] === "0" ? "1" : "2");
-
-					console.log("AFTER MOVE: " + prevState);
 
 					if (self.gameWon(prevState)) {
 						// game won, game no longer running, winner produced
