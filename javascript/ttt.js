@@ -176,16 +176,16 @@ TTTController.createChallenge = function(db, playersObj, callback) {
 	
 	query.on('row', function(row) {
 		if (row) {
-
+			console.log("channel found");
 			// this channel has previously played a game
 			if (row.gamerunning === "YES") {
-
+				console.log('hi');
 				// a game is currently running
 				qresult.message = GAMEISRUNNING;
 				callback(qresult);
 			
 			} else {
-
+				console.log('hello');
 				db.query(self.makeUpdateQuery(0, "", "CHALLENGED", playersObj))
 					.on('end', function(result) {
 						callback(qresult);
