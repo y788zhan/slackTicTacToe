@@ -214,34 +214,31 @@ TTTController.acceptChallenge = function(db, playersObj, callback) {
 	callback = callback || self.no_op;
 
 	var query = db.query(self.makeChannelQuery(playersObj));
-	console.log('hi');
 	query.on('row', function(row) {
 		if (row) {
 			if (row.gamerunning === "YES") {
-			console.log('yes');
 				qresult.message = GAMEISRUNNING;
 				callback(qresult);
 			
 			} else if (row.gamerunning === "NO") {
-			console.log('no');
+
 				qresult.message = NOCHALLENGE;
 				callback(qresult);
 			
 			} else {
-				console.log(row.player2, playersObj.player1);
+
 				if (row.player2 == playersObj.player1) {
-					console.log('eq');
+
 					db.query(self.makeUpdateQuery(0, "", "YES", playersObj, false))
 						.on('end', function(result) {
 							callback(qresult);
-						})
-						.on('error', function(result) {
-							console.log(result);
 						});
+						
 				} else {
-					console.log('ne');
+
 					qresult.message = NOTCHALLENGED;
 					callback(qresult);
+				
 				}
 				
 			}
