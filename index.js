@@ -73,14 +73,11 @@ function validateRequest(db, req, res, resolve, reject) {
 }
 
 function isAuthenticated(req, res, next) {
-  console.log("trim" + req.body.command + "trim");
 
-  var query = db.query("SELECT * FROM SLACKTOKENS WHERE COMMAND = '" + req.body.comamnd + "';");
-  console.log("SELECT * FROM SLACKTOKENS WHERE COMMAND = '" + req.body.comamnd + "';")
+  var query = db.query("SELECT * FROM SLACKTOKENS WHERE COMMAND = '" + req.body.command + "';");
   query.on('row', function(row) {
-    console.log(row.token, req.body.token);
+
     if (row.token === req.body.token) {
-      console.log('matched');
       return next();
     } else {
       errHandler(res);
@@ -89,10 +86,10 @@ function isAuthenticated(req, res, next) {
 
   query.on('end', function(result) {
     if (result.rowCount === 0) {
-      console.log('none found');
       errHandler(res);
     }
   });
+
 }
 
 app.use('/', isAuthenticated);
