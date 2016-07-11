@@ -76,37 +76,66 @@ function isFromSlack(req, res, next) {
 //app.use('/', isFromSlack);
 
 // responds with instructions of how to use custom slash commands
-app.post('/usage', function(req, res) {
-
-    res.status(200).json({
-      "text": "redirected"
-    });
-    //res.status(200).json({
-    delayedRes = {"text": "/tttchallenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
-                "/tttaccept : accepts the tic-tac-toe challenge\n" +
-                "/tttreject : rejects the tic-tac-toe challenge\n" +
-                "/tttquit : Quits current game\n" +
-                "/tttboard : Displays the currently board of the game\n" +
-                "/tttmove <[1-9]> : Makes your move on a cell"};
-
-    postBackSlack(req, delayedRes);
-    //});
-
-});
 
 app.post('/ttt', function(req, res) {
   
-  res.redirect(307, '/usage');
+  var content = req.body.text.trim();
+  var firstWord = content.substr(0, content.indexOf(" "));
+  console.log(content);
+
+  if (firstWord === "challenge") {
+    res.redirect(307, '/challenge');
+  } else if (firstWord === "move") {
+    res.redirect(307, '/move');
+  }
+
+  switch(content) {
+    case "usage" :
+      res.redirect(307, '/usage');
+      break;
+    case "accept" :
+      res.redirect(307, '/accept');
+      break;
+    case "reject" :
+      res.redirect(307, '/reject');
+      break;
+    case "board" :
+      res.redirect(307, '/gamestate');
+      break;
+    case "quit" :
+      res.redirect(307, '/quit');
+      break;
+    default:
+      res.status(200).json({
+        "text": "Invalid command. Type /ttt usage for help"
+      })
+  }
   
 });
 
+app.post('/usage', function(req, res) {
 
+    quickResponseSlack(res);
+
+    delayedRes = {
+      "text": "/ttt challenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
+              "/ttt accept : accepts the tic-tac-toe challenge\n" +
+              "/ttt reject : rejects the tic-tac-toe challenge\n" +
+              "/ttt quit : Quits current game\n" +
+              "/ttt board : Displays the currently board of the game\n" +
+              "/ttt move <[1-9]> : Makes your move on a cell"
+    };
+
+    postBackSlack(req, delayedRes);
+
+});
 
 // challenges a user to a game
 app.post('/challenge', function(req, res) {
 
     quickResponseSlack(res);
 
+    req.body.text = req.body.text.split(" ").splice(-1)[0];
     var po = TTTController.getPlayersObj(req);
     var delayedRes = {};
 
@@ -203,7 +232,7 @@ app.post('/move', function(req, res) {
     var po = TTTController.getPlayersObj(req);
     var delayedRes = {};
 
-    TTTController.playerMove(db, po, req.body.text, function(result) {
+    TTTController.playerMove(db, po, req.body.text.split(" ").splice(-1)[0], function(result) {
         if (result.message === "success") {
 
             delayedRes = JSON.parse(
