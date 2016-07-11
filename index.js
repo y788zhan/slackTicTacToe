@@ -78,29 +78,27 @@ function isFromSlack(req, res, next) {
 // responds with instructions of how to use custom slash commands
 app.post('/usage', function(req, res) {
 
-    res.status(200).json({
-        "text": "/tttchallenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
+    //res.status(200).json({
+     delayedRes = {"text": "/tttchallenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
                 "/tttaccept : accepts the tic-tac-toe challenge\n" +
                 "/tttreject : rejects the tic-tac-toe challenge\n" +
                 "/tttquit : Quits current game\n" +
                 "/tttboard : Displays the currently board of the game\n" +
-                "/tttmove <[1-9]> : Makes your move on a cell"
-    });
+                "/tttmove <[1-9]> : Makes your move on a cell"};
+
+    postBackSlack(req, delayedRes);
+    //});
 
 });
 
-app.post('/test', function(req, res) {
+app.post('/ttt', function(req, res) {
   res.status(200).json({
-    "message":"redirecting"
-  })
-  res.redirect('/othertest');
-});
-
-app.post('/othertest', function(req, res) {
-  res.status(200).json({
-    "message:": req.body.text
+    "text": "Loading ..."
   });
+  res.redirect('/usage');
 });
+
+
 
 // challenges a user to a game
 app.post('/challenge', function(req, res) {
