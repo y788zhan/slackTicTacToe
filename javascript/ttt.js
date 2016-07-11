@@ -475,7 +475,7 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
                         prevState = prevState.replaceAt(0, prevState[0] === "0" ? "1" : "0");
                         newState = self.ternaryToDecimal(prevState);
 
-                        db.query(self.makeUpdateQuery(newState, "", "YES", playersObj, false);
+                        db.query(self.makeUpdateQuery(newState, "", "YES", playersObj, false));
 
                         qresult.gameWon = false;
                         qresult.gameEnd = false;
