@@ -73,6 +73,8 @@ function validateRequest(db, req, res, resolve, reject) {
 }
 
 function isAuthenticated(req, res, next) {
+  console.log(req.body.command);
+
   var query = db.query("SELECT * FROM SLACKTOKENS WHERE COMMAND = '" + req.body.comamnd + "';");
   query.on('row', function(row) {
     if (row.token === req.body.token) {
