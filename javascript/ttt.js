@@ -48,10 +48,10 @@ TTTController.no_op = function() {}
 TTTController.getPlayersObj = function(req) {
     var body = req.body;
     return {
-        teamID: body.team_id,
-        channelID: body.channel_id,
-        player1: body.user_name,
-        player2: body.text
+        teamID    : body.team_id,
+        channelID : body.channel_id,
+        player1   : body.user_name,
+        player2   : body.text
     };
 }
 
@@ -385,6 +385,8 @@ TTTController.getGame = function(db, playersObj, callback) {
 
 }
 
+TTTController.possibleMoves = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
 // move is the cell number
 TTTController.playerMove = function(db, playersObj, move, callback) {
     var self = this;
@@ -393,6 +395,11 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
     };
     callback = callback || self.no_op;
     move = Number(move);
+
+    if (self.possibleMoves.indexOf(move) === -1) {
+      qresult.message = "ERROR: invalid move";
+      return;
+    }
 
     var query = db.query(self.makeChannelQuery(playersObj));
     query.on('row', function(row) {
