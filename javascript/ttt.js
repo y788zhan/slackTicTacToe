@@ -429,8 +429,9 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
                 var prevState = self.decimalToTernary(row.gamestate);
                 var newState;
 
-                if ((prevState[0] === "0" && playersObj.player1 === row.player2) ||
-                    (prevState[0] === "1" && playersObj.player1 === row.player1)) {
+                if (((prevState[0] === "0" && playersObj.player1 === row.player2) ||
+                     (prevState[0] === "1" && playersObj.player1 === row.player1)) &&
+                    (row.player1 != row.player2)) {
 
                     qresult.message = NOTYOURTURN;
                     callback(qresult);

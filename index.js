@@ -134,7 +134,7 @@ app.post('/challenge', function(req, res) {
 
     quickResponseSlack(res);
 
-    req.body.text = req.body.text.split(" ").splice(-1)[0];
+    req.body.text = req.body.text.split(" ").splice(-1)[0]; // give the last word of text
     var po = TTTController.getPlayersObj(req);
     var delayedRes = {};
 
@@ -169,7 +169,7 @@ app.post('/start', function(req, res) {
                 )
             ); // deep copy
             delayedRes.response_type = "in_channel";
-            delayedRes.text = req.body.user_name + " has accepted the challenged";
+            delayedRes.text = req.body.user_name + " has accepted the challenge";
 
         } else {
             delayedRes.text = result.message + "\nType /ttt usage for help";
