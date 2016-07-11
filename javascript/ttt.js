@@ -169,7 +169,7 @@ TTTController.createChallenge = function(db, playersObj, callback) {
 
 
 	console.log(playersObj.player2);
-	if (playersObj.player2 == undefined) {
+	if (playersObj.player2 == undefined || playersObj.player2 === "") {
 		qresult.message = "ERROR: No user was challenged";
 		callback(qresult);
 		return;

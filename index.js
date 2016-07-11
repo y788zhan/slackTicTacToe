@@ -111,7 +111,7 @@ app.post('/reject', function(req, res) {
 			delayedRes.text = result.message;
 		}
 
-		postBackSlack(req, delayeRes);
+		postBackSlack(req, delayedRes);
 	});
 
 
