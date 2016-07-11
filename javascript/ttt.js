@@ -5,6 +5,7 @@ var GAMEISRUNNING     = "ERROR: A game is currently running";
 var GAMENOTRUNNING    = "ERROR: There is no game running currently";
 var NOCHALLENGE       = "ERROR: There is no open challenge currently";
 var NOTCHALLENGED     = "ERROR: You are not the challenged player";
+var NOTYOURTURN       = "ERROR: It's currently not your turn";
 
 /* game state is expressed as 10-bit ternary string, but stored as a decimal value
 left-most bit is the turn bit
@@ -43,6 +44,7 @@ String.prototype.replaceAt=function(index, character) {
 
 TTTController.no_op = function() {}
 
+// playerObj.player1 is always the user who initiated the slash command
 TTTController.getPlayersObj = function(req) {
 	var body = req.body;
 	return {
@@ -386,6 +388,15 @@ TTTController.playerMove = function(db, playersObj, move, callback) {
 
 				var prevState = self.decimalToTernary(row.gamestate);
 				var newState;
+
+				if ((prevState[0] === "0" && playersObj.player1 === row.player2) ||
+				    (prevState[0] === "1" && playersObj.player1 === row.player1)) {
+					
+					qresult.message = NOTYOURTURN;
+					callback(qresult);
+					return;
+				
+				}
 
 				if (prevState[move] == 0) {
 					prevState = prevState.replaceAt(move, prevState[0] === "0" ? "1" : "2");

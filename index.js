@@ -70,7 +70,7 @@ app.post('/challenge', function(req, res) {
 			delayedRes.response_type = "in_channel";
 			delayedRes.text = req.body.user_name + " has challenged " + req.body.text + " to a game of tic-tac-toe";
 		} else {
-			delayedRes.text = result.message;
+			delayedRes.text = result.message + "\nType /tttusage for help";
 		}
 
 		postBackSlack(req, delayedRes);
@@ -90,7 +90,7 @@ app.post('/start', function(req, res) {
 			delayedRes.response_type = "in_channel";
 			delayedRes.text = req.body.user_name + " has accepted the challenged";
 		} else {
-			delayedRes.text = result.message;
+			delayedRes.text = result.message + "\nType /tttusage for help";
 		}
 
 		postBackSlack(req, delayedRes);
@@ -109,7 +109,7 @@ app.post('/reject', function(req, res) {
 			delayedRes.response_type = "in_channel";
 			delayedRes.text = req.body.user_name + " has declined the challenge";
 		} else {
-			delayedRes.text = result.message;
+			delayedRes.text = result.message + "\nType /tttusage for help";
 		}
 
 		postBackSlack(req, delayedRes);
@@ -143,7 +143,7 @@ app.post('/move', function(req, res) {
 	validationResponseSlack(res);
 
 	var po = TTTController.getPlayersObj(req);
-	var delayedRes = {}
+	var delayedRes = {};
 
 	TTTController.playerMove(db, po, req.body.text, function(result) {
 		if (result.message === "success") {
