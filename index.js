@@ -117,7 +117,7 @@ app.post('/usage', function(req, res) {
     quickResponseSlack(res);
 
     delayedRes = {
-      "text": TTTController.instructions;
+      "text": TTTController.instructions
     };
 
     postBackSlack(req, delayedRes);
