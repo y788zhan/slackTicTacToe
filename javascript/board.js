@@ -139,9 +139,11 @@ TTTBoard.makeBoard = function(result) {
     var line3 = result.player2 + ": X";
 
     if (result.gameWon) {
+      console.log("GAMEWON", result.gameWon);
       self.board.text = result.winner + " HAS WON";
       line1 = "Game ended\n";
     } else if (result.gameEnd) {
+      console.log("GAMEEND", result.gameEnd);
       self.board.text = "THE GAME HAS ENDED IN A TIE";
       line1 = "Game ended\n";
     }
