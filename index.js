@@ -243,14 +243,14 @@ app.post('/move', function(req, res) {
             if (result.gameWon) {
 
                 delayedRes.text = result.winner + " HAS WON";
+                delayedRes.attachments[0].text = "Game ended";
 
             } else if (result.gameEnd) {
 
                 delayedRes.text = "THE GAME HAS ENDED IN A TIE";
+                delayedRes.attachments[0].text = "Game ended";
 
             }
-
-            delayedRes.attachments[0].text = "Game ended";
 
         } else {
             delayedRes.text = result.message + "\nType /ttt usage for help";
