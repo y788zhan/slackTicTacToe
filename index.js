@@ -23,7 +23,6 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
 });
 
 
-
 // TIC TAC TOE API ENDPOINTS
 
 function postBackSlack(req, body) {
@@ -154,6 +153,12 @@ app.post('/start', function(req, res) {
             delayedRes = JSON.parse(JSON.stringify(TTTBoard.makeBoard(result))); // deep copy
             delayedRes.response_type = "in_channel";
             delayedRes.text = req.body.user_name + " has accepted the challenge";
+
+
+            // test timeout
+            setTimeout(function() {
+              TTTController.forceQuit(db, po);
+            }, 3000);
 
         } else {
             delayedRes.text = result.message + "\nType /ttt usage for help";

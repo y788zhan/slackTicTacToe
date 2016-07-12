@@ -369,6 +369,29 @@ TTTController.quitGame = function(db, playersObj, callback) {
 
 }
 
+TTTController.forceQuit = function(db, playersObj, callback) {
+    var self = this;
+    var qresult = {
+        message: "The previous tic-tac-toe game has been quit after 15 minutes"
+    };
+    callback = callback || self.no_op;
+
+    var query = db.query(self.makeChannelQuery(playersObj));
+    // since this only runs when a game has been started, we will necessarily find a row
+    query.on('row', function(row) {
+
+      if (row.gamerunning == "YES") {
+    
+        db.query(self.makeUpdateQuery(0, "", "NO", playersObj, false))
+          .on('end', function(result) {
+            callback(qresult);
+          });
+      
+      }
+    
+    });
+}
+
 TTTController.getGame = function(db, playersObj, callback) {
     var self = this;
     var qresult = {
