@@ -152,5 +152,4 @@ TTTBoard.makeBoard = function(result) {
 
 }
 
-
 module.exports = TTTBoard;

@@ -2,5 +2,5 @@
   "name": "Slack Tic Tac Toe",
   "description": "Node & Express ackend for Tic Tac Toe game in Slack",
   "repository": "",
-  "keywords": ["node", "express", "static"]
+  "keywords": ["node", "express", "static", "slack"]
 }

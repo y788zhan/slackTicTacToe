@@ -127,18 +127,8 @@ TTTController.gameWon = function(gameState) {
 }
 
 TTTController.gameTied = function(gameState) {
-    var one   = gameState[1];
-        two   = gameState[2];
-        three = gameState[3];
-        four  = gameState[4];
-        five  = gameState[5];
-        six   = gameState[6];
-        seven = gameState[7];
-        eight = gameState[8];
-        nine  = gameState[9];
-    return ( one   != 0 && two   != 0 && three != 0 &&
-             four  != 0 && five  != 0 && six   != 0 &&
-             seven != 0 && eight != 0 && nine  != 0 );
+    // check if gameState[1-9] contains "0"
+    return (gameState.substr(1, 10).indexOf("0") === -1);
 }
 
 TTTController.makeChannelQuery = function(playersObj) {
