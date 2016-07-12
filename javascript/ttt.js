@@ -380,9 +380,8 @@ TTTController.getGame = function(db, playersObj, callback) {
             qresult.message = GAMENOTRUNNING;
 
         } else {
-            console.log("GAME STATE: ", row.gamestate, self.decimalToTernary(row.gamestate));
             var board = self.decimalToTernary(row.gamestate);
-            qresult.gamestate = board;
+            qresult.gameState = board;
             qresult.player1 = row.player1;
             qresult.player2 = row.player2;
         }

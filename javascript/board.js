@@ -126,8 +126,6 @@ TTTBoard.makeBoard = function(gameState, player1, player2) {
     var attach3 = self.board.attachments[2];
 
     for (var i = 0; i < 3; i++) {
-        console.log(arr[i], arr[i + 3], arr[i + 6]);
-
         attach1.actions[i].text  = self.cellMap[arr[i]].val;
         attach1.actions[i].style = self.cellMap[arr[i]].style;
         attach2.actions[i].text  = self.cellMap[arr[i + 3]].val;
