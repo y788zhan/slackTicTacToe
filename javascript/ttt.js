@@ -52,6 +52,8 @@ String.prototype.replaceAt = function(index, character) {
     return this.substr(0, index) + character + this.substr(index + 1, this.length);
 }
 
+TTTController.gameTimeOut = 15 * 60 * 1000; // 15 minutes
+
 
 TTTController.no_op = function() {}
 

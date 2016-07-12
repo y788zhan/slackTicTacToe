@@ -53,6 +53,7 @@ function errHandler(res) {
 // check if request originated from Slack
 function isFromSlack(req, res, next) {
 
+  // Improvement: compare hashes
   var query = db.query("SELECT * FROM SLACKTOKENS WHERE TOKEN = '" + req.body.token + "';");
 
   query.on('end', function(result) {
@@ -156,9 +157,10 @@ app.post('/start', function(req, res) {
 
 
             // test timeout
+            // improvement: do this only after inactivity
             setTimeout(function() {
               TTTController.forceQuit(db, po);
-            }, 3000);
+            }, TTTController.gameTimeOut);
 
         } else {
             delayedRes.text = result.message + "\nType /ttt usage for help";
