@@ -155,7 +155,6 @@ app.post('/start', function(req, res) {
             delayedRes.response_type = "in_channel";
             delayedRes.text = req.body.user_name + " has accepted the challenge";
 
-
             // test timeout
             // improvement: do this only after inactivity
             setTimeout(function() {
@@ -264,3 +263,13 @@ app.post('/gamestate', function(req, res) {
 app.listen(app.get('port'), function() {
     console.log('Node app is running on port', app.get('port'));
 });
+
+
+// ping app every 25 mintues to keep awake
+var pingRate = 25 * 60 * 1000;
+setInterval(function() {
+  request({
+    url: "https://slackheroku-ttt.herokuapp.com",
+    method: "GET"
+  });
+}, pingRate)
