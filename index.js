@@ -117,12 +117,7 @@ app.post('/usage', function(req, res) {
     quickResponseSlack(res);
 
     delayedRes = {
-      "text": "/ttt challenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
-              "/ttt accept : accepts the tic-tac-toe challenge\n" +
-              "/ttt reject : rejects the tic-tac-toe challenge\n" +
-              "/ttt quit : Quits current game\n" +
-              "/ttt board : Displays the currently board of the game\n" +
-              "/ttt move <[1-9]> : Makes your move on a cell"
+      "text": TTTController.instructions;
     };
 
     postBackSlack(req, delayedRes);

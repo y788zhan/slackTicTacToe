@@ -36,6 +36,17 @@ playersObj schema:
   player2   : string
 */
 
+TTTController.instructions = "/ttt challenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
+                             "/ttt accept : accepts the tic-tac-toe challenge\n" +
+                             "/ttt reject : rejects the tic-tac-toe challenge\n" +
+                             "/ttt quit : Quits current game\n" +
+                             "/ttt board : Displays the currently board of the game\n" +
+                             "/ttt move <[1-9]> : Makes your move on a cell. The cells are arranged in the following form:\n" +
+                             "1|2|3\n" +
+                             "-+-+-\n" +
+                             "4|5|6\n" +
+                             "-+-+-\n" +
+                             "7|8|9";
 
 String.prototype.replaceAt = function(index, character) {
     return this.substr(0, index) + character + this.substr(index + 1, this.length);
