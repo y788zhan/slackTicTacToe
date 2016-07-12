@@ -134,16 +134,15 @@ TTTBoard.makeBoard = function(result) {
         attach3.actions[i].style = self.cellMap[arr[i + 6]].style;
     }
 
+    self.board.text = "Current board: "; // reset 
     var line1 = "It's currently " + (gameState[0] === "0" ? result.player1 : result.player2) + "'s turn\n";
     var line2 = result.player1 + ": O\n";
     var line3 = result.player2 + ": X";
 
     if (result.gameWon) {
-      console.log("GAMEWON", result.gameWon);
       self.board.text = result.winner + " HAS WON";
       line1 = "Game ended\n";
     } else if (result.gameEnd) {
-      console.log("GAMEEND", result.gameEnd);
       self.board.text = "THE GAME HAS ENDED IN A TIE";
       line1 = "Game ended\n";
     }
