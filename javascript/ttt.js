@@ -255,6 +255,7 @@ TTTController.acceptChallenge = function(db, playersObj, callback) {
 
                     db.query(self.makeUpdateQuery(0, "", "YES", playersObj, false))
                         .on('end', function(result) {
+                            qresult.gameState = "0000000000";
                             qresult.player1 = row.player1;
                             qresult.player2 = row.player2;
                             callback(qresult);

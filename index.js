@@ -163,11 +163,7 @@ app.post('/start', function(req, res) {
     TTTController.acceptChallenge(db, po, function(result) {
         if (result.message === "success") {
 
-            delayedRes = JSON.parse(
-                JSON.stringify(
-                    TTTBoard.makeBoard("0000000000", result.player1, result.player2)
-                )
-            ); // deep copy
+            delayedRes = JSON.parse(JSON.stringify(TTTBoard.makeBoard(result))); // deep copy
             delayedRes.response_type = "in_channel";
             delayedRes.text = req.body.user_name + " has accepted the challenge";
 
