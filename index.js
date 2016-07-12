@@ -54,20 +54,13 @@ function errHandler(res) {
 // check if request originated from Slack
 function isFromSlack(req, res, next) {
 
-  var query = db.query("SELECT * FROM SLACKTOKENS WHERE COMMAND = '" + req.body.command + "';");
-  query.on('row', function(row) {
-
-    if (row.token === req.body.token) {
-      // confirmed request from slack
-      return next();
-    } else {
-      errHandler(res);
-    }
-  });
+  var query = db.query("SELECT * FROM SLACKTOKENS WHERE TOKEN = '" + req.body.token + "';");
 
   query.on('end', function(result) {
     if (result.rowCount === 0) {
       errHandler(res);
+    } else {
+      return next();
     }
   });
 
