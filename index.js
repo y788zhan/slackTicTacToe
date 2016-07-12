@@ -234,23 +234,7 @@ app.post('/move', function(req, res) {
     TTTController.playerMove(db, po, req.body.text.split(" ").splice(-1)[0], function(result) {
         if (result.message === "success") {
 
-            delayedRes = JSON.parse(
-                JSON.stringify(
-                    TTTBoard.makeBoard(result.gameState, result.player1, result.player2)
-                )
-            ); // deep copy
-
-            if (result.gameWon) {
-
-                delayedRes.text = result.winner + " HAS WON";
-                delayedRes.attachments[0].text = "Game ended";
-
-            } else if (result.gameEnd) {
-
-                delayedRes.text = "THE GAME HAS ENDED IN A TIE";
-                delayedRes.attachments[0].text = "Game ended";
-
-            }
+            delayedRes = JSON.parse(JSON.stringify(TTTBoard.makeBoard(result))); // deep copy
 
         } else {
             delayedRes.text = result.message + "\nType /ttt usage for help";
@@ -272,11 +256,7 @@ app.post('/gamestate', function(req, res) {
 
         if (result.message === "success") {
 
-            delayedRes = JSON.parse(
-                JSON.stringify(
-                    TTTBoard.makeBoard(result.gameState, result.player1, result.player2)
-                )
-            ); // deep copy
+            delayedRes = JSON.parse(JSON.stringify(TTTBoard.makeBoard(result))); // deep copy
 
             delayedRes.response_type = "ephemeral"; // do not display to everyone
 

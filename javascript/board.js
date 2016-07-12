@@ -114,13 +114,13 @@ TTTBoard.cellMap = {
     }
 };
 
-// game state is a ternary string
-TTTBoard.makeBoard = function(gameState, player1, player2) {
+// receives a result object, result.gameState is a ternary string
+TTTBoard.makeBoard = function(result) {
     var self = this;
 
     gameState = String(gameState);
 
-    var arr = gameState.split("").slice(1, 10);
+    var arr = result.gameState.split("").slice(1, 10);
     var attach1 = self.board.attachments[0];
     var attach2 = self.board.attachments[1];
     var attach3 = self.board.attachments[2];
@@ -134,9 +134,17 @@ TTTBoard.makeBoard = function(gameState, player1, player2) {
         attach3.actions[i].style = self.cellMap[arr[i + 6]].style;
     }
 
-    var line1 = "It's currently " + (gameState[0] === "0" ? player1 : player2) + "'s turn\n";
-    var line2 = player1 + ": O\n";
-    var line3 = player2 + ": X";
+    var line1 = "It's currently " + (gameState[0] === "0" ? result.player1 : result.player2) + "'s turn\n";
+    var line2 = result.player1 + ": O\n";
+    var line3 = result.player2 + ": X";
+
+    if (result.gameWon) {
+      self.board.text = result.winner + " HAS WON";
+      line1 = "Game ended\n";
+    } else if (result.gameEnd) {
+      self.board.text = "THE GAME HAS ENDED IN A TIE";
+      line1 = "Game ended\n";
+    }
 
     attach1.text = line1 + line2 + line3;
 
