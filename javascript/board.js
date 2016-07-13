@@ -30,70 +30,70 @@ playersObj schema:
 */
 
 TTTBoard.board = {
-    "response_type": "in_channel",
-    "text": "Current board: ",
-    "attachments": [{
-        "text": "", // gives turn information
-        "callback_id": "_",
-        "color": "#3AA3E3",
-        "attachment_type": "default",
-        "actions": [{
-            "name": "1",
-            "text": "__",
-            "type": "button",
-            "value": "1"
+    response_type: "in_channel",
+    text: "Current board: ",
+    attachments: [{
+        text: "", // gives turn information
+        callback_id: "_",
+        color: "#3AA3E3",
+        attachment_type: "default",
+        actions: [{
+            name: "1",
+            text: "__",
+            type: "button",
+            value: "1"
         }, {
-            "name": "2",
-            "text": "__",
-            "type": "button",
-            "value": "2"
+            name: "2",
+            text: "__",
+            type: "button",
+            value: "2"
         }, {
-            "name": "3",
-            "text": "__",
-            "type": "button",
-            "value": "3"
+            name: "3",
+            text: "__",
+            type: "button",
+            value: "3"
         }]
     }, {
-        "text": "",
-        "callback_id": "_",
-        "color": "#3AA3E3",
-        "attachment_type": "default",
-        "actions": [{
-            "name": "4",
-            "text": "__",
-            "type": "button",
-            "value": "4"
+        text: "",
+        callback_id: "_",
+        color: "#3AA3E3",
+        attachment_type: "default",
+        actions: [{
+            name: "4",
+            text: "__",
+            type: "button",
+            value: "4"
         }, {
-            "name": "5",
-            "text": "__",
-            "type": "button",
-            "value": "5"
+            name: "5",
+            text: "__",
+            type: "button",
+            value: "5"
         }, {
-            "name": "6",
-            "text": "__",
-            "type": "button",
-            "value": "6"
+            name: "6",
+            text: "__",
+            type: "button",
+            value: "6"
         }]
     }, {
-        "text": "",
-        "callback_id": "_",
-        "color": "#3AA3E3",
-        "attachment_type": "default",
-        "actions": [{
-            "name": "7",
-            "text": "__",
-            "type": "button",
-            "value": "7"
+        text: "",
+        callback_id: "_",
+        color: "#3AA3E3",
+        attachment_type: "default",
+        actions: [{
+            name: "7",
+            text: "__",
+            type: "button",
+            value: "7"
         }, {
-            "name": "8",
-            "text": "__",
-            "type": "button",
-            "value": "8"
+            name: "8",
+            text: "__",
+            type: "button",
+            value: "8"
         }, {
-            "name": "9",
-            "text": "__",
-            "type": "button",
-            "value": "9"
+            name: "9",
+            text: "__",
+            type: "button",
+            value: "9"
         }]
     }]
 };

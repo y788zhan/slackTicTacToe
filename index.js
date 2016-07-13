@@ -36,7 +36,7 @@ function postBackSlack(req, body) {
     });
 }
 
-// respond with 3000ms to acknowledge request
+// respond within 3000ms to acknowledge request
 function quickResponseSlack(res) {
     res.status(200).json({
         "text": "Loading ..."
@@ -272,4 +272,5 @@ setInterval(function() {
     url: "https://slackheroku-ttt.herokuapp.com",
     method: "GET"
   });
-}, pingRate)
+}, pingRate);
+

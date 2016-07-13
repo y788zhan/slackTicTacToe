@@ -1,11 +1,11 @@
 var TTTController = {};
 
 var WRONGPLAYERSERROR = "ERROR: You're not one of the players of this game";
-var GAMEISRUNNING = "ERROR: A game is currently running";
-var GAMENOTRUNNING = "ERROR: There is no game running currently";
-var NOCHALLENGE = "ERROR: There is no open challenge currently";
-var NOTCHALLENGED = "ERROR: You are not the challenged player";
-var NOTYOURTURN = "ERROR: It's currently not your turn";
+var GAMEISRUNNING     = "ERROR: A game is currently running";
+var GAMENOTRUNNING    = "ERROR: There is no game running currently";
+var NOCHALLENGE       = "ERROR: There is no open challenge currently";
+var NOTCHALLENGED     = "ERROR: You are not the challenged player";
+var NOTYOURTURN       = "ERROR: It's currently not your turn";
 
 /* game state is expressed as 10-bit ternary string, but stored as a decimal value
 left-most bit is the turn bit
@@ -13,15 +13,25 @@ left-most bit is the turn bit
 1 == Player2's turn
 
 the next 9 bits are as follows:
-1 | 2 | 3
---+---+---
-4 | 5 | 6
---+---+---
-7 | 8 | 9
+ 1 | 2 | 3
+---+---+---
+ 4 | 5 | 6
+---+---+---
+ 7 | 8 | 9
 
 0 == EMPTY CELL
-1 == CELL WITH 0
+1 == CELL WITH O
 2 == CELL WITH X
+
+a possible game state is 0121202121,
+which looks like:
+ O | X | O
+---+---+---
+ X | _ | X
+---+---+---
+ 0 | X | 0
+this is then converted to 12220, which is stored in db
+
 
 Player1 is O
 Player2 is X
@@ -34,6 +44,13 @@ playersObj schema:
   channelID : string,
   player1   : string,
   player2   : string
+
+
+TTTRECORDS schema in PostgreSQL db:
+  teamid   | channelid | player1  | player2  | gamestate |  winner  | gamerunning
+-----------+-----------+----------+----------+-----------+----------+-------------------------------------
+  char(40)   char(40)    char(40)   char(40)   char(40)     char(40)  char(10) ("YES", "NO", "CHALLENGED")
+
 */
 
 TTTController.instructions = "/ttt challenge <user_name> : Challenges <user_name> to a tic-tac-toe game\n" +
@@ -145,7 +162,7 @@ TTTController.makeUpdateQuery = function(gameState, winner, gameRunning, players
            "SET    GAMESTATE   = " +       gameState            + ", \n" +
            "       WINNER      = " + "'" + winner               + "',\n" +
            "       GAMERUNNING = " + "'" + gameRunning          + "' \n" +
-(updatePlayers ? ",    PLAYER2 = " + "'" + playersObj.player2   + "',\n" + 
+(updatePlayers ? ",PLAYER2     = " + "'" + playersObj.player2   + "',\n" + 
            "       PLAYER1     = " + "'" + playersObj.player1   + "' \n" : "") +
            "WHERE  CHANNELID   = " + "'" + playersObj.channelID + "' \n" +
            "AND    TEAMID      = " + "'" + playersObj.teamID    + "';";
@@ -374,7 +391,7 @@ TTTController.quitGame = function(db, playersObj, callback) {
 TTTController.forceQuit = function(db, playersObj, callback) {
     var self = this;
     var qresult = {
-        message: "The previous tic-tac-toe game has been quit after 15 minutes"
+        message: "success"
     };
     callback = callback || self.no_op;
 
