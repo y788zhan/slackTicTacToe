@@ -7,6 +7,10 @@ var NOCHALLENGE       = "ERROR: There is no open challenge currently";
 var NOTCHALLENGED     = "ERROR: You are not the challenged player";
 var NOTYOURTURN       = "ERROR: It's currently not your turn";
 
+String.prototype.replaceAt = function(index, character) {
+    return this.substr(0, index) + character + this.substr(index + 1, this.length);
+}
+
 /* game state is expressed as 10-bit ternary string, but stored as a decimal value
 left-most bit is the turn bit
 0 == Player1's turn
@@ -65,9 +69,6 @@ TTTController.instructions = "/ttt challenge <user_name> : Challenges <user_name
                              "-+-+-\n" +
                              "7|8|9";
 
-String.prototype.replaceAt = function(index, character) {
-    return this.substr(0, index) + character + this.substr(index + 1, this.length);
-}
 
 TTTController.gameTimeOut = 15 * 60 * 1000; // 15 minutes
 
@@ -151,10 +152,10 @@ TTTController.gameTied = function(gameState) {
 }
 
 TTTController.makeChannelQuery = function(playersObj) {
-    return "SELECT * \n" +
-           "FROM  TTTRECORDS \n" +
+    return "SELECT *        \n" +
+           "FROM  TTTRECORDS\n" +
            "WHERE CHANNELID = " + "'" + playersObj.channelID + "' \n" +
-           "AND   TEAMID    = " + "'" + playersObj.teamID + "';";
+           "AND   TEAMID    = " + "'" + playersObj.teamID    + "';";
 }
 
 TTTController.makeUpdateQuery = function(gameState, winner, gameRunning, playersObj, updatePlayers) {
@@ -170,19 +171,19 @@ TTTController.makeUpdateQuery = function(gameState, winner, gameRunning, players
 
 TTTController.makeInsertQuery = function(playersObj) {
     return "INSERT INTO TTTRECORDS (TEAMID,     \n" +
-        "                           CHANNELID,  \n" +
-        "                           PLAYER1,    \n" +
-        "                           PLAYER2,    \n" +
-        "                           GAMESTATE,  \n" +
-        "                           WINNER,     \n" +
-        "                           GAMERUNNING)\n" +
-        "VALUES ('" + playersObj.teamID + "',\n" +
-        "        '" + playersObj.channelID + "',\n" +
-        "        '" + playersObj.player1 + "',\n" +
-        "        '" + playersObj.player2 + "',\n" +
-        "         " + 0 + ", \n" +
-        "         " + "''" + ", \n" +
-        "        '" + "CHALLENGED');"
+           "                        CHANNELID,  \n" +
+           "                        PLAYER1,    \n" +
+           "                        PLAYER2,    \n" +
+           "                        GAMESTATE,  \n" +
+           "                        WINNER,     \n" +
+           "                        GAMERUNNING)\n" +
+           "VALUES ('" + playersObj.teamID    + "',\n" +
+           "        '" + playersObj.channelID + "',\n" +
+           "        '" + playersObj.player1   + "',\n" +
+           "        '" + playersObj.player2   + "',\n" +
+           "         " + 0                    + ", \n" +
+           "         " + "''"                 + ", \n" +
+           "        '" + "CHALLENGED');";
 
 }
 
